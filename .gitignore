@@ -9,6 +9,7 @@
 /tests/testfindfiles
 /tests/testencoding
 /tests/*.res
+/link*.res
 /backup/
 *.bak
 *.ppu

@@ -70,6 +70,35 @@ $LAZBUILD --pcp="$PCP" --add-package-link /home/Tom/fpcupdeluxe/ccr/atflatcontro
 
 交叉构建时，Lazarus 需要重建 BGRABitmap/ATSynEdit/EControl 等依赖；当前配置下在这些包的 `.lpk` 搜索路径中加入了机器本地的源码目录，脚本也把相同源码路径传给项目编译。换机器或升级依赖时需要同步这些路径。
 
+## Windows x86_64 交叉构建
+
+```bash
+./scripts/build-win64.sh
+```
+
+产物在 `dist/win64-x86_64/TyEditor.exe`（PE32+ x86-64），同样使用原生 Win32 widgetset，仅导入经典系统 DLL。
+
+## Linux aarch64 交叉构建
+
+```bash
+./scripts/build-linux-aarch64.sh
+```
+
+产物在 `dist/linux-aarch64/TyEditor`，Qt6 widgetset，随包提供 `libQt6Pas.so.6`，通过 `$ORIGIN` RUNPATH 加载；运行环境需要 aarch64 Qt6（`qt6-qtbase-gui`）与 X11。
+
+交叉工具链准备（Fedora 44）：
+
+```bash
+sudo dnf install gcc-aarch64-linux-gnu gcc-c++-aarch64-linux-gnu binutils-aarch64-linux-gnu
+sudo dnf --forcearch=aarch64 --installroot=/opt/sysroot-aarch64 --use-host-config \
+  --releasever=44 --disablerepo='*' --enablerepo=fedora --enablerepo=updates \
+  install glibc glibc-devel libgcc libstdc++ qt6-qtbase-devel
+```
+
+FPC 交叉单元：使用 `ppcrossa64` 构建 `aarch64-linux` 的 RTL 与 packages，安装到 `/home/Tom/fpcupdeluxe/fpc/units/aarch64-linux`。`fpc.cfg` 的 `CPUAARCH64 && LINUX` 段需要把 `/opt/sysroot-aarch64/usr/lib64` 与 GCC 库目录放在 host 路径之前，否则链接器会选中 x86_64 的 `crti.o`/`libc.so`。交叉 binutils 需要以 `aarch64-linux-as`/`ld` 名称出现在 `PATH` 或 FPC bin 目录（脚本默认 `/opt/aarch64-bin`）。
+
+`libQt6Pas.so.6`（Lazarus Qt6 绑定）需用同一 sysroot 交叉编译到 `/opt/qt6pas-aarch64/lib`。
+
 ## macOS 交叉构建
 
 ```bash
