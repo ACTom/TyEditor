@@ -1,0 +1,15 @@
+/TyEditor
+/TyEditor.exe
+/TyEditor.res
+/tyeditor_icon.res
+/TyEditor.app
+/lib/
+/build/
+/dist/
+/tests/testfindfiles
+/tests/testencoding
+/tests/*.res
+/backup/
+*.bak
+*.ppu
+*.o

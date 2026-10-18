@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=TyEditor
+Comment=Multi-tab plain text editor
+Exec=tyeditor %F
+Icon=tyeditor
+Terminal=false
+Categories=Utility;TextEditor;
+MimeType=text/plain;
+StartupNotify=true

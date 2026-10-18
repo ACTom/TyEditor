@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="12"/>
+    <General>
+      <Flags>
+        <MainUnitHasCreateFormStatements Value="True"/>
+        <MainUnitHasTitleStatement Value="False"/>
+      </Flags>
+      <Title Value="TyEditor"/>
+      <Scaled Value="True"/>
+      <UseXPManifest Value="True"/>
+      <XPManifest>
+        <DpiAware Value="True/PM_V2"/>
+      </XPManifest>
+      <Icon Value="data/icons/tyeditor.ico"/>
+    </General>
+    <i18n>
+      <EnableI18N Value="True"/>
+      <OutDir Value="languages"/>
+    </i18n>
+    <BuildModes Count="1"><Item1 Name="Default" Default="True"/></BuildModes>
+    <RequiredPackages Count="6">
+      <Item1><PackageName Value="LCL"/></Item1>
+      <Item2><PackageName Value="tycontrols"/></Item2>
+      <Item3><PackageName Value="atsynedit_package"/></Item3>
+      <Item4><PackageName Value="atsynedit_ex_package"/></Item4>
+      <Item5><PackageName Value="econtrol_package"/></Item5>
+      <Item6><PackageName Value="encconv_package"/></Item6>
+    </RequiredPackages>
+    <Units Count="26">
+      <Unit0><Filename Value="TyEditor.lpr"/><IsPartOfProject Value="True"/></Unit0>
+      <Unit1><Filename Value="src/uutils.pas"/><IsPartOfProject Value="True"/><UnitName Value="uutils"/></Unit1>
+      <Unit2><Filename Value="src/usettings.pas"/><IsPartOfProject Value="True"/><UnitName Value="usettings"/></Unit2>
+      <Unit3><Filename Value="src/uencoding.pas"/><IsPartOfProject Value="True"/><UnitName Value="uencoding"/></Unit3>
+      <Unit4><Filename Value="src/ulanguage.pas"/><IsPartOfProject Value="True"/><UnitName Value="ulanguage"/></Unit4>
+      <Unit5><Filename Value="src/umacro.pas"/><IsPartOfProject Value="True"/><UnitName Value="umacro"/></Unit5>
+      <Unit6><Filename Value="src/ueditortab.pas"/><IsPartOfProject Value="True"/><UnitName Value="ueditortab"/></Unit6>
+      <Unit7><Filename Value="src/usession.pas"/><IsPartOfProject Value="True"/><UnitName Value="usession"/></Unit7>
+      <Unit8><Filename Value="src/ufind.pas"/><IsPartOfProject Value="True"/><UnitName Value="ufind"/></Unit8>
+      <Unit9><Filename Value="src/ufindfiles.pas"/><IsPartOfProject Value="True"/><UnitName Value="ufindfiles"/></Unit9>
+      <Unit10><Filename Value="src/ufindfilesdlg.pas"/><IsPartOfProject Value="True"/><UnitName Value="ufindfilesdlg"/></Unit10>
+      <Unit11><Filename Value="src/utranslation.pas"/><IsPartOfProject Value="True"/><UnitName Value="utranslation"/></Unit11>
+      <Unit12><Filename Value="src/umain.pas"/><IsPartOfProject Value="True"/><UnitName Value="umain"/></Unit12>
+    
+      <Unit13><Filename Value="src/usettingsdlg.pas"/><IsPartOfProject Value="True"/><UnitName Value="usettingsdlg"/></Unit13>
+      <Unit14><Filename Value="src/ucolorscheme.pas"/><IsPartOfProject Value="True"/><UnitName Value="ucolorscheme"/></Unit14>
+      <Unit15><Filename Value="src/umacromanager.pas"/><IsPartOfProject Value="True"/><UnitName Value="umacromanager"/></Unit15>
+      <Unit16><Filename Value="src/ubookmarklist.pas"/><IsPartOfProject Value="True"/><UnitName Value="ubookmarklist"/></Unit16>
+      <Unit17><Filename Value="src/ucolorschemeeditor.pas"/><IsPartOfProject Value="True"/><UnitName Value="ucolorschemeeditor"/></Unit17>
+      <Unit18><Filename Value="src/usingleinstance.pas"/><IsPartOfProject Value="True"/><UnitName Value="usingleinstance"/></Unit18>
+      <Unit19><Filename Value="src/uplatform.pas"/><IsPartOfProject Value="True"/><UnitName Value="uplatform"/></Unit19>
+      <Unit20><Filename Value="src/uwinproc.pas"/><IsPartOfProject Value="True"/><UnitName Value="uwinproc"/></Unit20>
+      <Unit21><Filename Value="src/usplitview.pas"/><IsPartOfProject Value="True"/><UnitName Value="usplitview"/></Unit21>
+      <Unit22><Filename Value="src/uresults.pas"/><IsPartOfProject Value="True"/><UnitName Value="uresults"/></Unit22>
+      <Unit23><Filename Value="src/ustatus.pas"/><IsPartOfProject Value="True"/><UnitName Value="ustatus"/></Unit23>
+      <Unit24><Filename Value="src/ucommands.pas"/><IsPartOfProject Value="True"/><UnitName Value="ucommands"/></Unit24>
+      <Unit25><Filename Value="src/umenubuilder.pas"/><IsPartOfProject Value="True"/><UnitName Value="umenubuilder"/></Unit25></Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="TyEditor"/>
+    </Target>
+    <SearchPaths>
+      <OtherUnitFiles Value="src"/>
+      <UnitOutputDirectory Value="build/lib/$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <SyntaxOptions><SyntaxMode Value="ObjFPC"/></SyntaxOptions>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+</CONFIG>
