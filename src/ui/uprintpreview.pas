@@ -29,9 +29,11 @@ type
     FImage: TImage;
     FScroll: TScrollBox;
     FBar: TTyPanel;
+    FZoomGroup: TTyPanel;
     FSettingsPanel: TTyPanel;
     FSettingsScroll: TTyScrollBox;
-    FPageLabel: TTyLabel;
+    FSettingsFooter: TTyPanel;
+    FPageLabel, FZoomLabel: TTyLabel;
     FPrintFontCombo: TTyFontComboBox;
     FPrintFontSize: TTySpinEdit;
     FLineNumbers, FWrapLines, FHeader, FFooter, FSelectionOnly,
@@ -140,16 +142,16 @@ begin
   FTitleBar.ShowIcon := True;
   FTitleBar.TitleAlignment := taCenter;
 
-  FBar := TTyPanel.Create(Self);
-  FBar.Parent := FSurface;
-  FBar.Align := alBottom;
-  FBar.Height := 52;
-
   FSettingsPanel := TTyPanel.Create(Self);
   FSettingsPanel.Parent := FSurface;
   FSettingsPanel.Align := alRight;
   FSettingsPanel.Width := 330;
   BuildSettingsPanel;
+
+  FBar := TTyPanel.Create(Self);
+  FBar.Parent := FSurface;
+  FBar.Align := alBottom;
+  FBar.Height := 54;
 
   FScroll := TScrollBox.Create(Self);
   FScroll.Parent := FSurface;
@@ -163,51 +165,50 @@ begin
   FImage.Stretch := True;
   FImage.Proportional := True;
 
-  FPageLabel := TTyLabel.Create(Self);
-  FPageLabel.Parent := FBar;
-  FPageLabel.SetBounds(10, 14, 180, 24);
-
   FBtnPrev := TTyButton.Create(Self);
   FBtnPrev.Parent := FBar;
-  FBtnPrev.SetBounds(196, 10, 80, 32);
-  FBtnPrev.Caption := Tr('< Previous');
+  FBtnPrev.SetBounds(16, 11, 34, 32);
+  FBtnPrev.Caption := '‹';
   FBtnPrev.OnClick := @DoPrev;
+
+  FPageLabel := TTyLabel.Create(Self);
+  FPageLabel.Parent := FBar;
+  FPageLabel.SetBounds(56, 15, 110, 24);
+  FPageLabel.Alignment := taCenter;
 
   FBtnNext := TTyButton.Create(Self);
   FBtnNext.Parent := FBar;
-  FBtnNext.SetBounds(282, 10, 80, 32);
-  FBtnNext.Caption := Tr('Next >');
+  FBtnNext.SetBounds(172, 11, 34, 32);
+  FBtnNext.Caption := '›';
   FBtnNext.OnClick := @DoNext;
 
+  FZoomGroup := TTyPanel.Create(Self);
+  FZoomGroup.Parent := FBar;
+  FZoomGroup.Align := alRight;
+  FZoomGroup.Width := 244;
+
   FBtnZoomOut := TTyButton.Create(Self);
-  FBtnZoomOut.Parent := FBar;
-  FBtnZoomOut.SetBounds(370, 10, 36, 32);
-  FBtnZoomOut.Caption := '-';
+  FBtnZoomOut.Parent := FZoomGroup;
+  FBtnZoomOut.SetBounds(0, 11, 34, 32);
+  FBtnZoomOut.Caption := '−';
   FBtnZoomOut.OnClick := @DoZoomOut;
 
+  FZoomLabel := TTyLabel.Create(Self);
+  FZoomLabel.Parent := FZoomGroup;
+  FZoomLabel.SetBounds(40, 15, 50, 24);
+  FZoomLabel.Alignment := taCenter;
+
   FBtnZoomIn := TTyButton.Create(Self);
-  FBtnZoomIn.Parent := FBar;
-  FBtnZoomIn.SetBounds(412, 10, 36, 32);
+  FBtnZoomIn.Parent := FZoomGroup;
+  FBtnZoomIn.SetBounds(96, 11, 34, 32);
   FBtnZoomIn.Caption := '+';
   FBtnZoomIn.OnClick := @DoZoomIn;
 
   FBtnFit := TTyButton.Create(Self);
-  FBtnFit.Parent := FBar;
-  FBtnFit.SetBounds(456, 10, 92, 32);
+  FBtnFit.Parent := FZoomGroup;
+  FBtnFit.SetBounds(140, 11, 88, 32);
   FBtnFit.Caption := Tr('Fit Width');
   FBtnFit.OnClick := @DoFitWidth;
-
-  FBtnPrint := TTyButton.Create(Self);
-  FBtnPrint.Parent := FBar;
-  FBtnPrint.SetBounds(572, 10, 100, 32);
-  FBtnPrint.Caption := Tr('Print...');
-  FBtnPrint.OnClick := @DoPrint;
-
-  FBtnClose := TTyButton.Create(Self);
-  FBtnClose.Parent := FBar;
-  FBtnClose.SetBounds(680, 10, 90, 32);
-  FBtnClose.Caption := Tr('Close');
-  FBtnClose.OnClick := @DoClose;
 end;
 
 procedure TPrintPreviewForm.BuildSettingsPanel;
@@ -253,6 +254,23 @@ begin
   LabelControl.BorderSpacing.Left := 28;
   LabelControl.Caption := Tr('Print settings');
   LabelControl.Font.Style := [fsBold];
+
+  FSettingsFooter := TTyPanel.Create(Self);
+  FSettingsFooter.Parent := FSettingsPanel;
+  FSettingsFooter.Align := alBottom;
+  FSettingsFooter.Height := 62;
+
+  FBtnPrint := TTyButton.Create(Self);
+  FBtnPrint.Parent := FSettingsFooter;
+  FBtnPrint.SetBounds(28, 15, 150, 32);
+  FBtnPrint.Caption := Tr('Print...');
+  FBtnPrint.OnClick := @DoPrint;
+
+  FBtnClose := TTyButton.Create(Self);
+  FBtnClose.Parent := FSettingsFooter;
+  FBtnClose.SetBounds(190, 15, 100, 32);
+  FBtnClose.Caption := Tr('Close');
+  FBtnClose.OnClick := @DoClose;
 
   FSettingsScroll := TTyScrollBox.Create(Self);
   FSettingsScroll.Parent := FSettingsPanel;
@@ -394,8 +412,9 @@ end;
 procedure TPrintPreviewForm.UpdateControls;
 begin
   if FLayout = nil then Exit;
-  FPageLabel.Caption := Format(Tr('Page %d of %d') + '  %d%%',
-    [FCurrent + 1, FLayout.PageCount, FZoom]);
+  FPageLabel.Caption := Format(Tr('Page %d of %d'),
+    [FCurrent + 1, FLayout.PageCount]);
+  FZoomLabel.Caption := Format('%d%%', [FZoom]);
   FBtnPrev.Enabled := FCurrent > 0;
   FBtnNext.Enabled := FCurrent < FLayout.PageCount - 1;
   FBtnZoomOut.Enabled := FZoom > 25;
