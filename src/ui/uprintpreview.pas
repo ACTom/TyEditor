@@ -23,6 +23,8 @@ type
     FCurrent: Integer;
     FZoom: Integer;
     FBitmap: TBitmap;
+    FSurface: TTyFormSurface;
+    FTitleBar: TTyTitleBar;
     FImage: TImage;
     FScroll: TScrollBox;
     FBar: TTyPanel;
@@ -119,19 +121,30 @@ end;
 
 procedure TPrintPreviewForm.BuildUI;
 begin
+  FSurface := TTyFormSurface.Create(Self);
+  FSurface.Parent := Self;
+  FSurface.Align := alClient;
+
+  FTitleBar := TTyTitleBar.Create(Self);
+  FTitleBar.Parent := FSurface;
+  FTitleBar.Align := alTop;
+  FTitleBar.Caption := Caption;
+  FTitleBar.ShowIcon := True;
+  FTitleBar.TitleAlignment := taCenter;
+
   FBar := TTyPanel.Create(Self);
-  FBar.Parent := Self;
+  FBar.Parent := FSurface;
   FBar.Align := alBottom;
   FBar.Height := 52;
 
   FSettingsPanel := TTyPanel.Create(Self);
-  FSettingsPanel.Parent := Self;
+  FSettingsPanel.Parent := FSurface;
   FSettingsPanel.Align := alRight;
   FSettingsPanel.Width := 330;
   BuildSettingsPanel;
 
   FScroll := TScrollBox.Create(Self);
-  FScroll.Parent := Self;
+  FScroll.Parent := FSurface;
   FScroll.Align := alClient;
   FScroll.BorderStyle := bsNone;
   FScroll.Color := clGray;
