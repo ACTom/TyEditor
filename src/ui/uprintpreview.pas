@@ -28,6 +28,7 @@ type
     FTitleBar: TTyTitleBar;
     FImage: TImage;
     FScroll: TScrollBox;
+    FPreviewHost: TTyPanel;
     FBar: TTyPanel;
     FZoomGroup: TTyPanel;
     FSettingsPanel: TTyPanel;
@@ -148,13 +149,17 @@ begin
   FSettingsPanel.Width := 330;
   BuildSettingsPanel;
 
+  FPreviewHost := TTyPanel.Create(Self);
+  FPreviewHost.Parent := FSurface;
+  FPreviewHost.Align := alClient;
+
   FBar := TTyPanel.Create(Self);
-  FBar.Parent := FSurface;
+  FBar.Parent := FPreviewHost;
   FBar.Align := alBottom;
   FBar.Height := 54;
 
   FScroll := TScrollBox.Create(Self);
-  FScroll.Parent := FSurface;
+  FScroll.Parent := FPreviewHost;
   FScroll.Align := alClient;
   FScroll.BorderStyle := bsNone;
   FScroll.Color := clGray;
