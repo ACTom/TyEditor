@@ -1,0 +1,15 @@
+var
+  Cmd: string;
+  Shift: Integer;
+begin
+  Cmd := GetCommand;
+  Shift := 0;
+  if Cmd = 'encrypt' then
+    Shift := 3
+  else if Cmd = 'decrypt' then
+    Shift := -3
+  else
+    Fail('Unknown command: ' + Cmd);
+  if Shift <> 0 then
+    ReplaceSelection(ShiftLetters(GetSelection, Shift));
+end.

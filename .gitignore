@@ -14,6 +14,7 @@
 /tests/testfindfiles
 /tests/testsyntax
 /tests/testplugins
+/tests/*.exe
 /tests/testtools
 
 # Local build configuration

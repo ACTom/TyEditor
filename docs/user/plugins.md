@@ -4,9 +4,9 @@ TyEditor v1 plugins are distributed as **`.typlugin` packages**. A package is a
 ZIP archive containing a `plugin.json` manifest, optional translations and the
 plugin’s own scripts or executables.
 
-Plugins never run through a shell. Work runs in the background with a timeout,
-captured stderr and a cancel button. Each package has its own identity,
-compatibility range, runtime, options and translations.
+Plugins never run through a shell. Work runs in the background with a cancel
+button; process plugins also have a timeout and captured stderr. Each package
+has its own identity, compatibility range, runtime, options and translations.
 
 Plugins are separate from **external tools**. A plugin is an installed package
 with a manifest; an external tool is a command you configure locally under
@@ -23,14 +23,15 @@ The repository ships these sample plugins in `data/plugins/`:
 | Text Tools | Uppercase, lowercase, title case, trim trailing spaces |
 | Caesar Cipher | Demo encryption/decryption of ASCII letters (shift 3) |
 | JSON Formatter | Format or minify a JSON document, with indent/sort options |
-| External Formatter | Run `clang-format` on a selection or document |
 
-All five samples currently run `python3` scripts and declare Linux support
-only (`linux-x86_64` and `linux-aarch64`). All five need Python 3 on `PATH`;
-External Formatter additionally needs `clang-format`. On Windows and
-macOS the samples remain visible in the plugin manager but are disabled with a
-platform reason. They are examples, not required parts of the editor; remove
-them from a distribution if the dependencies are undesirable.
+The four samples use the embedded PascalScript runtime, so they run on every
+supported platform without an external interpreter or package dependency. They
+are examples, not required parts of the editor; remove them from a distribution
+if they are undesirable.
+
+To run an external formatter such as `clang-format`, configure it as an
+[external tool](tools.md) under **Tools > Manage Tools...** instead of installing
+a plugin.
 
 Bundled plugins can be disabled but not uninstalled.
 
@@ -112,8 +113,8 @@ A minimal package manifest:
   "description": "Uppercase the current selection.",
   "default_locale": "en",
   "runtime": {
-    "type": "process",
-    "command": ["python3", "${pluginDir}/plugin.py"]
+    "type": "pascalscript",
+    "entry": "main.ps"
   },
   "timeout_ms": 5000,
   "compatibility": {
@@ -200,7 +201,7 @@ The complete request/response reference, PascalScript API, compatibility rules,
 security notes and packaging commands are in
 [Plugin package and protocol v1](../dev/PLUGIN_PROTOCOL.md).
 
-A minimal Python plugin:
+A minimal process plugin (Python):
 
 ```python
 import json

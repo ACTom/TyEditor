@@ -7,17 +7,13 @@
   "description": "Simple formatting operations for the current selection or document.",
   "default_locale": "en",
   "runtime": {
-    "type": "process",
-    "command": [
-      "python3",
-      "${pluginDir}/plugin.py"
-    ]
+    "type": "pascalscript",
+    "entry": "main.ps"
   },
   "timeout_ms": 5000,
   "compatibility": {
     "platforms": [
-      "linux-x86_64",
-      "linux-aarch64"
+      "any"
     ]
   },
   "permissions": [

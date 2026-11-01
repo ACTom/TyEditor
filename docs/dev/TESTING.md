@@ -20,6 +20,15 @@ The runner builds and executes:
 | `tests/testsyntax` | Extended lexer registration, rule validity and filename matching |
 | `tests/testfindfiles` | Find-in-files engine with an explicit directory, mask and query |
 
+`testplugins --bundled` runs only the four bundled PascalScript examples. It can
+be cross-compiled and run under Wine or on another platform to verify the
+plugins independently of the process-runtime fixtures:
+
+```bash
+lazbuild --os=win64 --cpu=x86_64 tests/testplugins.lpi
+wine tests/testplugins.exe --bundled
+```
+
 `testfindfiles` is not a unit assertion suite; it prints a match count and
 requires arguments. The runner invokes it as:
 
@@ -129,33 +138,35 @@ says otherwise.
 
 ### 8. Plugins
 
-Prerequisite: `python3` is available for the bundled process samples. The
-bundled samples declare Linux only, so on Windows and macOS they appear as
-disabled with a platform reason. The PascalScript package must be installed in
-Lazarus; the fixture uses no external interpreter.
+Prerequisite: `python3` is still used by the process-runtime test fixtures
+(`slow`, `badresponse` and `override`). The bundled plugins use PascalScript and
+need no external interpreter; the PascalScript package must be installed in
+Lazarus.
 
-1. Open **Plugins**: Base64 Tools, Text Tools, Caesar Cipher, JSON Formatter
-   and External Formatter are listed. Missing optional dependencies are reported
-   when the command runs.
+1. Open **Plugins**: Base64 Tools, Text Tools, Caesar Cipher and JSON Formatter
+   are listed and enabled on every platform.
 2. Select text and run **Base64 Encode**; selection is replaced. Run Decode on
    the result and verify the original text returns.
 3. Run **Text Tools > Trim Trailing Spaces** on a document; line endings are
    preserved. Run **Caesar Cipher > Encrypt** then **Decrypt** on a selection and
    verify the original text returns.
 4. Run **JSON Formatter > Format JSON** and change the indentation/sort options;
-   verify the option dialog and localized labels.
-5. Install `dist/plugins/sample.base64-1.0.0.typlugin` through **Manage
+   verify the option dialog and localized labels. Run it on invalid JSON and
+   verify that the error message is shown.
+5. Run **Base64 Tools > Decode** on invalid Base64 and verify the error message.
+6. Install `dist/plugins/sample.base64-1.0.0.typlugin` through **Manage
    Plugins...**; verify user-override behavior, disable/enable, reload and
    uninstall. Confirm the security prompt for user plugins.
-6. Verify a PascalScript package runs, reports a localized message and can be
+7. Verify a PascalScript package runs, reports a localized message and can be
    cancelled from the progress dialog.
-7. Break a manifest or remove its `command`; **Plugin Errors** reports it and
+8. Break a manifest or remove its `command`; **Plugin Errors** reports it and
    the rest of the plugin menu still works.
-8. Set a small `timeout_ms` and a blocking plugin; verify it is terminated and
-   an error dialog appears. Verify the UI remains responsive during execution.
-9. Verify unknown response actions do not crash the editor and `message`/`log`
-   actions behave as documented. Verify zh_CN fallback for a package with only
-   `en.json`.
+9. Set a small `timeout_ms` and a blocking process plugin; verify it is
+   terminated and an error dialog appears. Verify the UI remains responsive
+   during execution.
+10. Verify unknown response actions do not crash the editor and `message`/`log`
+    actions behave as documented. Verify zh_CN fallback for a package with only
+    `en.json`.
 
 ### 9. External tools
 

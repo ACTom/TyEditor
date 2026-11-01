@@ -73,11 +73,11 @@ validated and extracted.
   "timeout_ms": 5000,
   "compatibility": {
     "editor": ">=0.1.0 <2.0.0",
-    "platforms": ["linux-x86_64", "linux-aarch64"]
+    "platforms": ["any"]
   },
   "runtime": {
-    "type": "process",
-    "command": ["python3", "${pluginDir}/plugin.py"]
+    "type": "pascalscript",
+    "entry": "main.ps"
   },
   "permissions": ["text.read", "text.write"],
   "commands": [
@@ -87,9 +87,9 @@ validated and extracted.
 }
 ```
 
-The example declares Linux only because its command is `python3`; a process
-plugin should list only the platforms where its executable is known to exist.
-Use `["any"]` only when that is genuinely true.
+A process plugin should list only the platforms where its executable is known
+to exist. Use `["any"]` only when that is genuinely true; the embedded
+PascalScript runtime is available everywhere.
 
 Required fields: `schema`, `api`, `id`, `name`, `version`, `runtime` and at least
 one valid `commands` entry. `schema` and `api` must both be `1` in this release.
@@ -275,13 +275,36 @@ function GetSelection: string;                         // selected text
 function GetOption(Name: string): string;              // current option value
 function GetLocale: string;                            // context.locale
 function GetFileName: string;                          // context.file
+function GetCommand: string;                           // current command id
 procedure ReplaceSelection(Value: string);
 procedure ReplaceDocument(Value: string);
 procedure InsertText(Value: string);
 procedure SetCaret(Line, Col: Integer);
 procedure Message(Value: string);
 procedure Log(Value: string);
+
+// Text helpers
+function Base64Encode(Text: string): string;
+function Base64Decode(Text: string): string;
+function ShiftLetters(Text: string; Shift: Integer): string;
+function UpperText(Text: string): string;
+function LowerText(Text: string): string;
+function TitleText(Text: string): string;
+function TrimTrailingSpaces(Text: string): string;
+
+// JSON helpers
+function FormatJSON(Text: string; Indent: Integer; SortKeys: Boolean): string;
+function MinifyJSON(Text: string): string;
+
+// Error reporting
+function LastError: string;                            // last helper error, or ''
+procedure Fail(Message: string);                       // return ok=false with message
+procedure FailKey(Key, Fallback: string);              // localized Fail
 ```
+
+Helpers that parse input set `LastError` on failure and return an empty string;
+call `Fail` or `FailKey` after checking it. `Fail` ends the command with an
+`ok: false` response; actions added before the failure are discarded.
 
 Example `main.ps`:
 

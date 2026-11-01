@@ -54,8 +54,10 @@ var
   ActionText: string;
   FixtureRoot, PackageRoot, IncompatRoot, PackageFile, BadFile: string;
   StartTick: QWord;
+  BundledOnly: Boolean;
   Zip: TZipper;
 begin
+  BundledOnly := (ParamCount > 0) and (ParamStr(1) = '--bundled');
   Root := IncludeTrailingPathDelimiter(ExtractFileDir(ExpandFileName(ParamStr(0)))) +
     '..' + PathDelim + 'data' + PathDelim + 'plugins';
   FixtureRoot := IncludeTrailingPathDelimiter(ExtractFileDir(ExpandFileName(ParamStr(0)))) +
@@ -92,6 +94,24 @@ begin
       Request.Free;
     end;
 
+    Request := NewRequest('sample.base64', 'encode', 'héllo');
+    try
+      if not Host.Execute(Plugin, Command, Request, Response, ErrorText) then
+      begin
+        WriteLn('base64 unicode error: ', ErrorText);
+        Halt(63);
+      end;
+      try
+        ActionText := FirstActionText(Response, Kind);
+        if not Check((Kind = 'replace_selection') and (ActionText = 'aMOpbGxv'),
+          'unexpected unicode base64 response: ' + Kind + ' / ' + ActionText) then Halt(64);
+      finally
+        Response.Free;
+      end;
+    finally
+      Request.Free;
+    end;
+
     Plugin := Host.FindPlugin('sample.jsonformat');
     if not Check(Plugin <> nil, 'sample.jsonformat missing') then Halt(8);
     Command := Plugin.FindCommand('format');
@@ -114,6 +134,213 @@ begin
       end;
     finally
       Request.Free;
+    end;
+
+    Command := Plugin.FindCommand('minify');
+    Request := NewRequest('sample.jsonformat', 'minify', '{"b": 1, "a": [1, 2]}');
+    try
+      if not Host.Execute(Plugin, Command, Request, Response, ErrorText) then
+      begin
+        WriteLn('json minify error: ', ErrorText);
+        Halt(58);
+      end;
+      try
+        ActionText := FirstActionText(Response, Kind);
+        if not Check((Kind = 'replace_document') and
+          (ActionText = '{"b":1,"a":[1,2]}'),
+          'unexpected json minify response: ' + Kind + ' / ' + ActionText) then Halt(59);
+      finally
+        Response.Free;
+      end;
+    finally
+      Request.Free;
+    end;
+
+    Command := Plugin.FindCommand('format');
+    Request := NewRequest('sample.jsonformat', 'format', 'not json');
+    try
+      if not Host.Execute(Plugin, Command, Request, Response, ErrorText) then
+      begin
+        WriteLn('json error response failed: ', ErrorText);
+        Halt(60);
+      end;
+      try
+        if not Check(Response.Get('ok', True) = False,
+          'invalid JSON was not reported') then Halt(61);
+        if not Check(Response.Get('message', '') <> '',
+          'invalid JSON message missing') then Halt(62);
+      finally
+        Response.Free;
+      end;
+    finally
+      Request.Free;
+    end;
+
+    Plugin := Host.FindPlugin('sample.base64');
+    Command := Plugin.FindCommand('decode');
+    Request := NewRequest('sample.base64', 'decode', 'aGVsbG8=');
+    try
+      if not Host.Execute(Plugin, Command, Request, Response, ErrorText) then
+      begin
+        WriteLn('base64 decode error: ', ErrorText);
+        Halt(40);
+      end;
+      try
+        ActionText := FirstActionText(Response, Kind);
+        if not Check((Kind = 'replace_selection') and (ActionText = 'hello'),
+          'unexpected base64 decode response: ' + Kind + ' / ' + ActionText) then Halt(41);
+      finally
+        Response.Free;
+      end;
+    finally
+      Request.Free;
+    end;
+
+    Request := NewRequest('sample.base64', 'decode', '***');
+    try
+      if not Host.Execute(Plugin, Command, Request, Response, ErrorText) then
+      begin
+        WriteLn('base64 error response failed: ', ErrorText);
+        Halt(42);
+      end;
+      try
+        if not Check(Response.Get('ok', True) = False,
+          'invalid base64 was not reported') then Halt(43);
+        if not Check(Response.Get('message', '') <> '',
+          'invalid base64 message missing') then Halt(44);
+      finally
+        Response.Free;
+      end;
+    finally
+      Request.Free;
+    end;
+
+    Plugin := Host.FindPlugin('sample.texttools');
+    if not Check(Plugin <> nil, 'sample.texttools missing') then Halt(45);
+    Command := Plugin.FindCommand('upper');
+    Request := NewRequest('sample.texttools', 'upper', 'Hello');
+    try
+      if not Host.Execute(Plugin, Command, Request, Response, ErrorText) then
+      begin
+        WriteLn('texttools upper error: ', ErrorText);
+        Halt(46);
+      end;
+      try
+        ActionText := FirstActionText(Response, Kind);
+        if not Check((Kind = 'replace_selection') and (ActionText = 'HELLO'),
+          'unexpected uppercase response: ' + Kind + ' / ' + ActionText) then Halt(47);
+      finally
+        Response.Free;
+      end;
+    finally
+      Request.Free;
+    end;
+
+    Request := NewRequest('sample.texttools', 'upper', 'héllo');
+    try
+      if not Host.Execute(Plugin, Command, Request, Response, ErrorText) then
+      begin
+        WriteLn('texttools unicode error: ', ErrorText);
+        Halt(65);
+      end;
+      try
+        ActionText := FirstActionText(Response, Kind);
+        if not Check((Kind = 'replace_selection') and (ActionText = 'HÉLLO'),
+          'unexpected unicode uppercase response: ' + Kind + ' / ' + ActionText) then Halt(66);
+      finally
+        Response.Free;
+      end;
+    finally
+      Request.Free;
+    end;
+
+    Command := Plugin.FindCommand('title');
+    Request := NewRequest('sample.texttools', 'title', 'hello world');
+    try
+      if not Host.Execute(Plugin, Command, Request, Response, ErrorText) then
+      begin
+        WriteLn('texttools title error: ', ErrorText);
+        Halt(48);
+      end;
+      try
+        ActionText := FirstActionText(Response, Kind);
+        if not Check((Kind = 'replace_selection') and (ActionText = 'Hello World'),
+          'unexpected title response: ' + Kind + ' / ' + ActionText) then Halt(49);
+      finally
+        Response.Free;
+      end;
+    finally
+      Request.Free;
+    end;
+
+    Command := Plugin.FindCommand('trim');
+    Request := NewRequest('sample.texttools', 'trim', 'a  ' + #10 + 'b' + #9 + #10);
+    try
+      if not Host.Execute(Plugin, Command, Request, Response, ErrorText) then
+      begin
+        WriteLn('texttools trim error: ', ErrorText);
+        Halt(50);
+      end;
+      try
+        ActionText := FirstActionText(Response, Kind);
+        if not Check((Kind = 'replace_document') and
+          (ActionText = 'a' + #10 + 'b' + #10),
+          'unexpected trim response: ' + Kind + ' / ' + ActionText) then Halt(51);
+      finally
+        Response.Free;
+      end;
+    finally
+      Request.Free;
+    end;
+
+    Plugin := Host.FindPlugin('sample.caesar');
+    if not Check(Plugin <> nil, 'sample.caesar missing') then Halt(52);
+    Command := Plugin.FindCommand('encrypt');
+    Request := NewRequest('sample.caesar', 'encrypt', 'abc XYZ');
+    try
+      if not Host.Execute(Plugin, Command, Request, Response, ErrorText) then
+      begin
+        WriteLn('caesar encrypt error: ', ErrorText);
+        Halt(53);
+      end;
+      try
+        ActionText := FirstActionText(Response, Kind);
+        if not Check((Kind = 'replace_selection') and (ActionText = 'def ABC'),
+          'unexpected caesar response: ' + Kind + ' / ' + ActionText) then Halt(54);
+      finally
+        Response.Free;
+      end;
+    finally
+      Request.Free;
+    end;
+
+    Command := Plugin.FindCommand('decrypt');
+    Request := NewRequest('sample.caesar', 'decrypt', 'def ABC');
+    try
+      if not Host.Execute(Plugin, Command, Request, Response, ErrorText) then
+      begin
+        WriteLn('caesar decrypt error: ', ErrorText);
+        Halt(55);
+      end;
+      try
+        ActionText := FirstActionText(Response, Kind);
+        if not Check((Kind = 'replace_selection') and (ActionText = 'abc XYZ'),
+          'unexpected caesar decrypt response: ' + Kind + ' / ' + ActionText) then Halt(56);
+      finally
+        Response.Free;
+      end;
+    finally
+      Request.Free;
+    end;
+
+    if not Check(Plugin.SupportsPlatform('win64-x86_64') and
+      Plugin.SupportsPlatform('darwin-aarch64'),
+      'caesar is not cross-platform') then Halt(57);
+
+    if BundledOnly then
+    begin
+      WriteLn('RESULT ok');
+      Exit;
     end;
 
     Host.Reload(Root, FixtureRoot);
@@ -190,7 +417,7 @@ begin
     Manager := TPluginManager.Create(ConfigDir);
     try
       Manager.Reload(Root, IncludeTrailingPathDelimiter(ConfigDir) + 'plugins');
-      if not Check(Manager.Plugins.Count >= 5, 'manager plugin count') then Halt(12);
+      if not Check(Manager.Plugins.Count >= 4, 'manager plugin count') then Halt(12);
       if not Check(Manager.SetEnabled('sample.base64', False), 'disable plugin') then Halt(13);
       Manager.Reload(Root, IncludeTrailingPathDelimiter(ConfigDir) + 'plugins');
       Plugin := Manager.FindPlugin('sample.base64');

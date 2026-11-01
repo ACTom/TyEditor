@@ -1,0 +1,15 @@
+var
+  Cmd: string;
+begin
+  Cmd := GetCommand;
+  if Cmd = 'upper' then
+    ReplaceSelection(UpperText(GetSelection))
+  else if Cmd = 'lower' then
+    ReplaceSelection(LowerText(GetSelection))
+  else if Cmd = 'title' then
+    ReplaceSelection(TitleText(GetSelection))
+  else if Cmd = 'trim' then
+    ReplaceDocument(TrimTrailingSpaces(GetText))
+  else
+    Fail('Unknown command: ' + Cmd);
+end.

@@ -16,7 +16,7 @@ used for the current verification; newer compatible releases may work.
 | ATFlatControls | 2.3.1 | Lazarus package `atflatcontrols_package` |
 | EncConv | 1.1 | Lazarus package `encconv_package` |
 | PascalScript | Lazarus component | Embedded PascalScript plugin runtime |
-| Python | 3.x | Version generation and sample process plugins |
+| Python | 3.x | Version generation and process-runtime test fixtures |
 | Qt6 | 6.x | Linux desktop build only |
 
 The project file declares `LCL`, `tycontrols`, `atsynedit_package`,

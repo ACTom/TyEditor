@@ -12,7 +12,7 @@ Tested versions are listed in [Dependencies](../dev/DEPENDENCIES.md). You need:
 - TyControls source.
 - ATSynEdit, ATSynEdit_Ex, EControl, ATFlatControls, EncConv and PascalScript
   packages.
-- Python 3 (version generation and the bundled Python plugin samples).
+- Python 3 (version generation and process-runtime test fixtures).
 - Linux: Qt6 development libraries (`pkg-config --modversion Qt6Widgets`).
 - Optional cross-compilation toolchains for Windows, macOS and Linux aarch64.
 

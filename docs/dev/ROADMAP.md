@@ -25,8 +25,8 @@ appears at the end of this page.
 - **Plugins v1** — installable `.typlugin` packages, process and PascalScript
   runtimes, package manager, options, per-plugin i18n, compatibility checks,
   background execution with timeout/cancellation, and user-over-plugin
-  precedence. Bundled Base64, Text Tools, Caesar Cipher, JSON Formatter and
-  External Formatter examples; package/protocol documentation complete.
+  precedence. Bundled Base64, Text Tools, Caesar Cipher and JSON Formatter
+  PascalScript examples; package/protocol documentation complete.
 - **External tools** — user-configured commands in a separate Tools menu and
   manager, stored in `tools.json`, with placeholders, selection/document input,
   output application, background execution, cancellation and timeout.

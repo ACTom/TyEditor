@@ -1,0 +1,18 @@
+var
+  Cmd, Source, ResultText: string;
+begin
+  Cmd := GetCommand;
+  Source := GetSelection;
+  if Cmd = 'encode' then
+    ReplaceSelection(Base64Encode(Source))
+  else if Cmd = 'decode' then
+  begin
+    ResultText := Base64Decode(Source);
+    if LastError <> '' then
+      FailKey('error.decode', 'The selection is not valid Base64 text.')
+    else
+      ReplaceSelection(ResultText);
+  end
+  else
+    Fail('Unknown command: ' + Cmd);
+end.

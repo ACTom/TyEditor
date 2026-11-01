@@ -1,0 +1,31 @@
+var
+  Cmd, Source, ResultText: string;
+  Indent: Integer;
+  SortKeys: Boolean;
+begin
+  Cmd := GetCommand;
+  Source := GetText;
+  if Cmd = 'minify' then
+  begin
+    ResultText := MinifyJSON(Source);
+    if LastError <> '' then
+      FailKey('error.invalid_json', 'The document is not valid JSON.')
+    else
+      ReplaceDocument(ResultText);
+  end
+  else if Cmd = 'format' then
+  begin
+    if GetOption('indent') = '4' then
+      Indent := 4
+    else
+      Indent := 2;
+    SortKeys := GetOption('sort_keys') = 'true';
+    ResultText := FormatJSON(Source, Indent, SortKeys);
+    if LastError <> '' then
+      FailKey('error.invalid_json', 'The document is not valid JSON.')
+    else
+      ReplaceDocument(ResultText);
+  end
+  else
+    Fail('Unknown command: ' + Cmd);
+end.

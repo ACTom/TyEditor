@@ -1,8 +1,0 @@
-{
-  "plugin.name": "外部格式化器",
-  "plugin.description": "使用 clang-format 格式化当前选区或文档。",
-  "command.selection.title": "使用 clang-format 格式化选区",
-  "command.document.title": "使用 clang-format 格式化文档",
-  "error.not_found": "未在 PATH 中找到 clang-format。",
-  "error.failed": "clang-format 执行失败。"
-}

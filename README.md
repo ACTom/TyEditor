@@ -115,17 +115,17 @@ Bundled samples live in `data/plugins/`:
 - **Text Tools** — uppercase, lowercase, title case, or trim trailing spaces.
 - **Caesar Cipher** — demo encryption/decryption (shift 3, not secure).
 - **JSON Formatter** — format or minify JSON with indent/sort options.
-- **External Formatter** — run `clang-format` on a selection or document.
 
-All five samples are Python 3 process plugins and currently declare Linux
-support only, so Windows and macOS show them as disabled with a platform reason.
-External Formatter also needs `clang-format`. The PascalScript runtime is
-embedded and needs no external interpreter.
+The four samples use the embedded PascalScript runtime, so they work on every
+supported platform without an external interpreter. For running an external
+formatter such as `clang-format`, configure it under **Tools > Manage Tools...**
+instead of installing a plugin.
 
 Use **Plugins > Manage Plugins...** to install a package, enable or disable it,
 reload, open the user plugin directory or uninstall it. The manager keeps state
 in `plugins.json`; incompatible packages remain visible but disabled with a
-reason. Plugin execution runs in the background with timeout and cancellation.
+reason. Plugins run in the background; process plugins also have a timeout and
+captured stderr, and every plugin can be cancelled.
 Each package owns its translations, resolved through exact locale, base
 language, default locale and English.
 
