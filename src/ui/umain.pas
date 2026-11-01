@@ -286,6 +286,8 @@ type
     function BuildPrintLayout(APromptSelection: Boolean; out ATitle: string): TPrintLayout;
     function CollectPrintText(APromptSelection: Boolean; out ATitle: string;
       out AFirstLine, ALastLine: Integer): TStringList;
+    function CollectPrintSources(out ATitle: string; out AFullText,
+      ASelectionText: TStringList; out ASelectionFirstLine: Integer): Boolean;
     procedure PrintFromPreview(Sender: TObject);
     procedure CloseAppLater(Data: PtrInt);
     procedure MaybeCloseAfterTabClose(Data: PtrInt);
@@ -3966,48 +3968,85 @@ begin
   end;
 end;
 
-function TMainForm.CollectPrintText(APromptSelection: Boolean;
-  out ATitle: string; out AFirstLine, ALastLine: Integer): TStringList;
+function TMainForm.CollectPrintSources(out ATitle: string; out AFullText,
+  ASelectionText: TStringList; out ASelectionFirstLine: Integer): Boolean;
 var
   Tab: TEditorTab;
   Caret: TATCaretItem;
   X1, Y1, X2, Y2: Integer;
   HasSelection: Boolean;
+  SelectedText: string;
 begin
-  Result := nil;
-  AFirstLine := 0;
-  ALastLine := 0;
+  Result := False;
   ATitle := '';
+  AFullText := nil;
+  ASelectionText := nil;
+  ASelectionFirstLine := 0;
   Tab := ActiveTab;
   if Tab = nil then Exit;
   ATitle := Tab.BaseTitle;
   if Trim(ATitle) = '' then ATitle := Tr('Untitled');
 
+  AFullText := TStringList.Create;
+  AFullText.Text := Tab.Editor.Text;
+  if AFullText.Count = 0 then AFullText.Add('');
+
   HasSelection := False;
+  Y1 := 0;
   if Tab.Editor.Carets.Count > 0 then
   begin
     Caret := Tab.Editor.Carets[0];
     Caret.GetRange(X1, Y1, X2, Y2, HasSelection);
-    if HasSelection and (Trim(Tab.Editor.TextSelected) = '') then
-      HasSelection := False;
   end;
+  if HasSelection then
+  begin
+    SelectedText := Tab.Editor.TextSelected;
+    if Trim(SelectedText) <> '' then
+    begin
+      ASelectionText := TStringList.Create;
+      ASelectionText.Text := SelectedText;
+      ASelectionFirstLine := Y1;
+    end;
+  end;
+  Result := True;
+end;
 
-  Result := TStringList.Create;
-  if HasSelection and (FSettings.PrintSelectionOnly or
-     (APromptSelection and (TyMessageDlg(Tr('Print only the selected text?'),
-       mtConfirmation, [mbYes, mbNo]) = mrYes))) then
-  begin
-    Result.Text := Tab.Editor.TextSelected;
-    AFirstLine := Y1;
-    ALastLine := Y1 + Result.Count - 1;
-  end
-  else
-  begin
-    Result.Text := Tab.Editor.Text;
-    AFirstLine := 0;
-    ALastLine := Result.Count - 1;
+function TMainForm.CollectPrintText(APromptSelection: Boolean;
+  out ATitle: string; out AFirstLine, ALastLine: Integer): TStringList;
+var
+  FullText, SelectionText: TStringList;
+  SelectionFirstLine: Integer;
+  UseSelection: Boolean;
+begin
+  Result := nil;
+  AFirstLine := 0;
+  ALastLine := 0;
+  ATitle := '';
+  if not CollectPrintSources(ATitle, FullText, SelectionText, SelectionFirstLine) then
+    Exit;
+  try
+    UseSelection := (SelectionText <> nil) and FSettings.PrintSelectionOnly;
+    if (SelectionText <> nil) and (not UseSelection) and APromptSelection then
+      UseSelection := TyMessageDlg(Tr('Print only the selected text?'),
+        mtConfirmation, [mbYes, mbNo]) = mrYes;
+    if UseSelection then
+    begin
+      Result := SelectionText;
+      SelectionText := nil;
+      AFirstLine := SelectionFirstLine;
+      ALastLine := AFirstLine + Result.Count - 1;
+    end
+    else
+    begin
+      Result := FullText;
+      FullText := nil;
+      AFirstLine := 0;
+      ALastLine := Result.Count - 1;
+    end;
+  finally
+    FullText.Free;
+    SelectionText.Free;
   end;
-  if Result.Count = 0 then Result.Add('');
 end;
 
 function TMainForm.BuildPrintLayout(APromptSelection: Boolean;
@@ -4093,23 +4132,24 @@ end;
 
 procedure TMainForm.ShowPrintPreview;
 var
-  Lines: TStringList;
+  FullText, SelectionText: TStringList;
   Title: string;
-  FirstLine, LastLine: Integer;
+  SelectionFirstLine: Integer;
   Dlg: TPrintPreviewForm;
 begin
-  Lines := CollectPrintText(True, Title, FirstLine, LastLine);
-  if Lines = nil then Exit;
+  if not CollectPrintSources(Title, FullText, SelectionText, SelectionFirstLine) then
+    Exit;
   try
-    Dlg := TPrintPreviewForm.Create(Self, Lines, FirstLine, LastLine,
-      FSettings, Title, @PrintFromPreview);
+    Dlg := TPrintPreviewForm.Create(Self, FullText, SelectionText,
+      SelectionFirstLine, FSettings, Title, @PrintFromPreview);
     try
       Dlg.ShowModal;
     finally
       Dlg.Free;
     end;
   finally
-    Lines.Free;
+    FullText.Free;
+    SelectionText.Free;
   end;
 end;
 

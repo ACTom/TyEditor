@@ -219,12 +219,13 @@ Lazarus.
 ### 12. Printing
 
 1. Open a long document with tabs and long lines; run **File > Print Preview**.
-   Verify pagination, wrapping, line numbers, header/footer and margins against
-   **File > Page Setup...**.
-2. Change margins and page options in Preferences > Printing, reopen preview and
-   verify the layout uses the new values.
-3. Select several lines and print/preview; answer **Yes** to print only the
-   selection and verify the selected text (not the whole document) appears.
+   Verify pagination, wrapping, line numbers, header/footer and margins.
+2. Change font, font size, margins and page options in the preview's right-hand
+   panel; verify the preview and page count update immediately. Change the same
+   values in Preferences > Printing and verify a new preview uses them.
+3. Select several lines and print/preview; in the preview enable **Print
+   selection only** and verify the selected text (not the whole document)
+   appears. For direct printing, answer **Yes** to the selection prompt.
 4. Open the system print dialog from **File > Print...** and from the preview's
    **Print...** button; cancel and verify TyEditor remains usable. If no printer
    is configured, verify the explanatory message instead of a crash.

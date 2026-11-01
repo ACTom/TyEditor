@@ -134,11 +134,14 @@ See [External tools](tools.md) for the full option list and examples.
 
 ## Printing
 
-**File > Print Preview** lays out the current document with black-and-white
-text, optional line numbers, wrapping, header and footer, and configurable
-margins. Use **File > Print...** to send the same layout to a printer, or
-**File > Page Setup...** to change margins and page options. If text is selected,
-TyEditor asks whether to print only the selection.
+**File > Print Preview** opens a dialog with the page on the left and live
+options on the right: print font and size, line numbers, wrapping, header and
+footer, selection-only mode, and margins. Changes rebuild the preview
+immediately. Use **File > Print...** to send the same layout to a printer, or
+**File > Page Setup...** for a compact margins/options dialog. If text is
+selected, direct printing asks whether to print only the selection; in the
+preview the **Print selection only** option is enabled whenever a selection
+exists.
 
 Page options are also available under **Settings > Preferences... > Printing**
 and are stored in `settings.json`.

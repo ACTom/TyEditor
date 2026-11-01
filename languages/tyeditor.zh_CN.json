@@ -422,5 +422,11 @@
   "Shortcut already used by \"%s\". Replace it?": "快捷键已被“%s”使用。要替换吗？",
   "This shortcut is reserved by the application menu.": "该快捷键由应用菜单保留。",
   "Font and colors": "字体与颜色",
-  "Tabs and display": "制表符与显示"
+  "Tabs and display": "制表符与显示",
+  "Bottom": "下",
+  "Left": "左",
+  "Margins (mm):": "页边距（毫米）：",
+  "Print settings": "打印设置",
+  "Right": "右",
+  "Top": "上"
 }

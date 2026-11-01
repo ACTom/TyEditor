@@ -31,6 +31,7 @@ begin
     Options.WrapLines := True;
     Options.Header := True;
     Options.Footer := True;
+    Options.SelectionOnly := False;
     Options.MarginLeft := 15;
     Options.MarginTop := 15;
     Options.MarginRight := 15;
