@@ -44,7 +44,7 @@ intelligence.
   palettes, TyControls interface themes, minimap/micromap, line numbers, ruler,
   whitespace display and a read-only document map (`F8`).
 - **Printing and customization** — print preview, optional selection printing,
-  page margins, header/footer and line numbers. A redesigned Preferences dialog
+  syntax-colored output, page margins, header/footer and line numbers. A redesigned Preferences dialog
   and a Keyboard Shortcuts editor make the editor configurable without editing
   JSON.
 - **Desktop integration** — single-instance command-line opening, drag and drop,

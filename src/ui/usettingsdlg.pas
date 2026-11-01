@@ -39,8 +39,8 @@ type
     FRuler, FBookmarkMargin, FMinimap, FMicromap,
     FTrimTrailing, FForceFinal, FRestore, FDarkMode, FSingleInstance, FAlwaysOnTop,
     FLigatures, FAutoIndent, FAutoPair, FSmoothScroll,
-    FCaretBlink, FPrintSelectionOnly, FPrintLineNumbers, FPrintWrapLines, FPrintHeader,
-    FPrintFooter: TTyCheckBox;
+    FCaretBlink, FPrintSelectionOnly, FPrintSyntaxHighlighting, FPrintLineNumbers,
+    FPrintWrapLines, FPrintHeader, FPrintFooter: TTyCheckBox;
     FOK, FCancel, FDefaults: TTyButton;
 
     procedure BuildUI;
@@ -167,7 +167,7 @@ begin
   FCategory.AddItem(Tr('Appearance'), Tr('Font and colors'), -1);
   FCategory.AddItem(Tr('Editor'), Tr('Tabs and display'), -1);
   FCategory.AddItem(Tr('Files'), Tr('Encoding and backups'), -1);
-  FCategory.AddItem(Tr('Printing'), Tr('Margins and page options'), -1);
+  FCategory.AddItem(Tr('Printing'), Tr('Font, colors and margins'), -1);
   FCategory.ItemIndex := 0;
   FCategory.OnClick := @CategoryChanged;
   FCategory.OnChange := @CategoryChanged;
@@ -405,15 +405,17 @@ begin
   FPrintFooter := AddCheck(P, 16, 196, 300, Tr('Print footer'), FSettings.PrintFooter);
   FPrintSelectionOnly := AddCheck(P, 16, 228, 420, Tr('Print selection only'),
     FSettings.PrintSelectionOnly);
+  FPrintSyntaxHighlighting := AddCheck(P, 16, 260, 420,
+    Tr('Syntax highlighting'), FSettings.PrintSyntaxHighlighting);
 
-  AddLabel(P, 16, 276, 200, Tr('Left margin (mm):'));
-  FMarginLeft := AddSpin(P, 220, 272, 100, FSettings.PrintMarginLeft, 0, 50);
-  AddLabel(P, 16, 312, 200, Tr('Top margin (mm):'));
-  FMarginTop := AddSpin(P, 220, 308, 100, FSettings.PrintMarginTop, 0, 50);
-  AddLabel(P, 16, 348, 200, Tr('Right margin (mm):'));
-  FMarginRight := AddSpin(P, 220, 344, 100, FSettings.PrintMarginRight, 0, 50);
-  AddLabel(P, 16, 384, 200, Tr('Bottom margin (mm):'));
-  FMarginBottom := AddSpin(P, 220, 380, 100, FSettings.PrintMarginBottom, 0, 50);
+  AddLabel(P, 16, 308, 200, Tr('Left margin (mm):'));
+  FMarginLeft := AddSpin(P, 220, 304, 100, FSettings.PrintMarginLeft, 0, 50);
+  AddLabel(P, 16, 344, 200, Tr('Top margin (mm):'));
+  FMarginTop := AddSpin(P, 220, 340, 100, FSettings.PrintMarginTop, 0, 50);
+  AddLabel(P, 16, 380, 200, Tr('Right margin (mm):'));
+  FMarginRight := AddSpin(P, 220, 376, 100, FSettings.PrintMarginRight, 0, 50);
+  AddLabel(P, 16, 416, 200, Tr('Bottom margin (mm):'));
+  FMarginBottom := AddSpin(P, 220, 412, 100, FSettings.PrintMarginBottom, 0, 50);
 end;
 
 procedure TSettingsForm.CategoryChanged(Sender: TObject);
@@ -504,6 +506,7 @@ begin
     FPrintHeader.Checked := D.PrintHeader;
     FPrintFooter.Checked := D.PrintFooter;
     FPrintSelectionOnly.Checked := D.PrintSelectionOnly;
+    FPrintSyntaxHighlighting.Checked := D.PrintSyntaxHighlighting;
     FMarginLeft.Value := D.PrintMarginLeft;
     FMarginTop.Value := D.PrintMarginTop;
     FMarginRight.Value := D.PrintMarginRight;
@@ -589,6 +592,7 @@ begin
   FSettings.PrintFontName := FPrintFontCombo.SelectedFont;
   FSettings.PrintFontSize := FPrintFontSize.Value;
   FSettings.PrintSelectionOnly := FPrintSelectionOnly.Checked;
+  FSettings.PrintSyntaxHighlighting := FPrintSyntaxHighlighting.Checked;
   FSettings.PrintLineNumbers := FPrintLineNumbers.Checked;
   FSettings.PrintWrapLines := FPrintWrapLines.Checked;
   FSettings.PrintHeader := FPrintHeader.Checked;

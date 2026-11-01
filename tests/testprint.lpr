@@ -32,6 +32,7 @@ begin
     Options.Header := True;
     Options.Footer := True;
     Options.SelectionOnly := False;
+    Options.SyntaxHighlighting := False;
     Options.MarginLeft := 15;
     Options.MarginTop := 15;
     Options.MarginRight := 15;

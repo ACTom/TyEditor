@@ -428,5 +428,7 @@
   "Margins (mm):": "页边距（毫米）：",
   "Print settings": "打印设置",
   "Right": "右",
-  "Top": "上"
+  "Top": "上",
+  "Syntax highlighting": "语法高亮",
+  "Font, colors and margins": "字体、颜色和页边距"
 }

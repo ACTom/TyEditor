@@ -58,6 +58,7 @@ type
     PrintFontName: string;
     PrintFontSize: Integer;
     PrintSelectionOnly: Boolean;
+    PrintSyntaxHighlighting: Boolean;
     PrintLineNumbers: Boolean;
     PrintWrapLines: Boolean;
     PrintHeader: Boolean;
@@ -150,6 +151,7 @@ begin
   PrintFontName := 'Courier New';
   PrintFontSize := 10;
   PrintSelectionOnly := False;
+  PrintSyntaxHighlighting := True;
   PrintLineNumbers := True;
   PrintWrapLines := True;
   PrintHeader := False;
@@ -281,6 +283,7 @@ begin
       PrintFontName := JsonStr(Obj, 'print_font_name', PrintFontName);
       PrintFontSize := JsonInt(Obj, 'print_font_size', PrintFontSize);
       PrintSelectionOnly := JsonBool(Obj, 'print_selection_only', PrintSelectionOnly);
+      PrintSyntaxHighlighting := JsonBool(Obj, 'print_syntax_highlighting', PrintSyntaxHighlighting);
       PrintLineNumbers := JsonBool(Obj, 'print_line_numbers', PrintLineNumbers);
       PrintWrapLines := JsonBool(Obj, 'print_wrap_lines', PrintWrapLines);
       PrintHeader := JsonBool(Obj, 'print_header', PrintHeader);
@@ -382,6 +385,7 @@ begin
     Obj.Add('print_font_name', PrintFontName);
     Obj.Add('print_font_size', PrintFontSize);
     Obj.Add('print_selection_only', PrintSelectionOnly);
+    Obj.Add('print_syntax_highlighting', PrintSyntaxHighlighting);
     Obj.Add('print_line_numbers', PrintLineNumbers);
     Obj.Add('print_wrap_lines', PrintWrapLines);
     Obj.Add('print_header', PrintHeader);

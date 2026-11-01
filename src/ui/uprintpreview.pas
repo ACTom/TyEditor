@@ -17,6 +17,7 @@ type
     FSettings: TAppSettings;
     FFullLines: TStringList;
     FSelectionLines: TStringList;
+    FFullStyles, FSelectionStyles: TPrintLineStyles;
     FSelectionFirstLine: Integer;
     FLayout: TPrintLayout;
     FTitle: string;
@@ -33,7 +34,8 @@ type
     FPageLabel: TTyLabel;
     FPrintFontCombo: TTyFontComboBox;
     FPrintFontSize: TTySpinEdit;
-    FLineNumbers, FWrapLines, FHeader, FFooter, FSelectionOnly: TTyCheckBox;
+    FLineNumbers, FWrapLines, FHeader, FFooter, FSelectionOnly,
+      FPrintSyntax: TTyCheckBox;
     FMarginLeft, FMarginTop, FMarginRight, FMarginBottom: TTySpinEdit;
     FBtnPrev, FBtnNext, FBtnZoomOut, FBtnZoomIn, FBtnFit, FBtnPrint,
       FBtnClose, FBtnDefaults: TTyButton;
@@ -51,6 +53,8 @@ type
     procedure DoZoomOut(Sender: TObject);
     procedure DoZoomIn(Sender: TObject);
     procedure DoFitWidth(Sender: TObject);
+    procedure DoScrollResize(Sender: TObject);
+    procedure CenterPreview;
     procedure DoPrint(Sender: TObject);
     procedure DoClose(Sender: TObject);
     procedure DoFormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -58,6 +62,7 @@ type
     procedure UpdateControls;
   public
     constructor Create(AOwner: TComponent; ASource, ASelectionSource: TStrings;
+      const AFullStyles, ASelectionStyles: TPrintLineStyles;
       ASelectionFirstLine: Integer; ASettings: TAppSettings;
       const ATitle: string; AOnPrint: TNotifyEvent);
     destructor Destroy; override;
@@ -68,7 +73,8 @@ type
 implementation
 
 constructor TPrintPreviewForm.Create(AOwner: TComponent; ASource,
-  ASelectionSource: TStrings; ASelectionFirstLine: Integer;
+  ASelectionSource: TStrings; const AFullStyles,
+  ASelectionStyles: TPrintLineStyles; ASelectionFirstLine: Integer;
   ASettings: TAppSettings; const ATitle: string; AOnPrint: TNotifyEvent);
 begin
   RequireDerivedFormResource := False;
@@ -79,6 +85,8 @@ begin
   FSettings := ASettings;
   FTitle := ATitle;
   FOnPrint := AOnPrint;
+  FFullStyles := AFullStyles;
+  FSelectionStyles := ASelectionStyles;
   FSelectionFirstLine := ASelectionFirstLine;
   FFullLines := TStringList.Create;
   FFullLines.Assign(ASource);
@@ -148,6 +156,7 @@ begin
   FScroll.Align := alClient;
   FScroll.BorderStyle := bsNone;
   FScroll.Color := clGray;
+  FScroll.OnResize := @DoScrollResize;
 
   FImage := TImage.Create(Self);
   FImage.Parent := FScroll;
@@ -210,7 +219,7 @@ var
   begin
     Result := TTyLabel.Create(Self);
     Result.Parent := FSettingsScroll;
-    Result.SetBounds(16, AY, 280, 24);
+    Result.SetBounds(28, AY, 278, 24);
     Result.Caption := ACaption;
   end;
 
@@ -219,7 +228,7 @@ var
   begin
     Result := TTyCheckBox.Create(Self);
     Result.Parent := FSettingsScroll;
-    Result.SetBounds(16, AY, 290, 24);
+    Result.SetBounds(28, AY, 278, 24);
     Result.Caption := ACaption;
     Result.Checked := AChecked;
     Result.OnChange := @OptionsChanged;
@@ -229,7 +238,7 @@ var
   begin
     Result := TTySpinEdit.Create(Self);
     Result.Parent := FSettingsScroll;
-    Result.SetBounds(170, AY, 100, 30);
+    Result.SetBounds(182, AY, 100, 30);
     Result.MinValue := AMin;
     Result.MaxValue := AMax;
     Result.Value := AValue;
@@ -241,6 +250,7 @@ begin
   LabelControl.Parent := FSettingsPanel;
   LabelControl.Align := alTop;
   LabelControl.Height := 42;
+  LabelControl.BorderSpacing.Left := 28;
   LabelControl.Caption := Tr('Print settings');
   LabelControl.Font.Style := [fsBold];
 
@@ -251,13 +261,13 @@ begin
   L := AddOptionLabel(16, Tr('Font family:'));
   FPrintFontCombo := TTyFontComboBox.Create(Self);
   FPrintFontCombo.Parent := FSettingsScroll;
-  FPrintFontCombo.SetBounds(16, 40, 290, 30);
+  FPrintFontCombo.SetBounds(28, 40, 280, 30);
   FPrintFontCombo.FixedPitchOnly := False;
   FPrintFontCombo.OnChange := @OptionsChanged;
 
   AddOptionLabel(80, Tr('Font size:'));
   FPrintFontSize := AddOptionSpin(104, FSettings.PrintFontSize, 6, 48);
-  FPrintFontSize.Left := 16;
+  FPrintFontSize.Left := 28;
 
   FLineNumbers := AddOptionCheck(148, Tr('Line numbers'), FSettings.PrintLineNumbers);
   FWrapLines := AddOptionCheck(180, Tr('Wrap long lines'), FSettings.PrintWrapLines);
@@ -265,20 +275,22 @@ begin
   FFooter := AddOptionCheck(244, Tr('Print footer'), FSettings.PrintFooter);
   FSelectionOnly := AddOptionCheck(276, Tr('Print selection only'),
     FSettings.PrintSelectionOnly);
+  FPrintSyntax := AddOptionCheck(308, Tr('Syntax highlighting'),
+    FSettings.PrintSyntaxHighlighting);
 
-  AddOptionLabel(320, Tr('Margins (mm):'));
-  AddOptionLabel(352, Tr('Left'));
-  FMarginLeft := AddOptionSpin(348, FSettings.PrintMarginLeft, 0, 50);
-  AddOptionLabel(388, Tr('Top'));
-  FMarginTop := AddOptionSpin(384, FSettings.PrintMarginTop, 0, 50);
-  AddOptionLabel(424, Tr('Right'));
-  FMarginRight := AddOptionSpin(420, FSettings.PrintMarginRight, 0, 50);
-  AddOptionLabel(460, Tr('Bottom'));
-  FMarginBottom := AddOptionSpin(456, FSettings.PrintMarginBottom, 0, 50);
+  AddOptionLabel(352, Tr('Margins (mm):'));
+  AddOptionLabel(384, Tr('Left'));
+  FMarginLeft := AddOptionSpin(380, FSettings.PrintMarginLeft, 0, 50);
+  AddOptionLabel(420, Tr('Top'));
+  FMarginTop := AddOptionSpin(416, FSettings.PrintMarginTop, 0, 50);
+  AddOptionLabel(456, Tr('Right'));
+  FMarginRight := AddOptionSpin(452, FSettings.PrintMarginRight, 0, 50);
+  AddOptionLabel(492, Tr('Bottom'));
+  FMarginBottom := AddOptionSpin(488, FSettings.PrintMarginBottom, 0, 50);
 
   FBtnDefaults := TTyButton.Create(Self);
   FBtnDefaults.Parent := FSettingsScroll;
-  FBtnDefaults.SetBounds(16, 510, 160, 32);
+  FBtnDefaults.SetBounds(28, 546, 160, 32);
   FBtnDefaults.Caption := Tr('Restore Defaults');
   FBtnDefaults.OnClick := @DoRestoreDefaults;
 
@@ -300,6 +312,7 @@ begin
     FMarginBottom.Value := ASettings.PrintMarginBottom;
     FSelectionOnly.Enabled := FSelectionLines <> nil;
     FSelectionOnly.Checked := ASettings.PrintSelectionOnly and FSelectionOnly.Enabled;
+    FPrintSyntax.Checked := ASettings.PrintSyntaxHighlighting;
   finally
     FLoadingOptions := False;
   end;
@@ -314,6 +327,7 @@ begin
   FSettings.PrintWrapLines := FWrapLines.Checked;
   FSettings.PrintHeader := FHeader.Checked;
   FSettings.PrintFooter := FFooter.Checked;
+  FSettings.PrintSyntaxHighlighting := FPrintSyntax.Checked;
   FSettings.PrintMarginLeft := FMarginLeft.Value;
   FSettings.PrintMarginTop := FMarginTop.Value;
   FSettings.PrintMarginRight := FMarginRight.Value;
@@ -334,22 +348,25 @@ var
   NewLayout: TPrintLayout;
   Options: TPrintOptions;
   Source: TStringList;
+  SourceStyles: TPrintLineStyles;
   FirstLine, LastLine: Integer;
 begin
   Options := PrintOptionsFromSettings(FSettings);
   if FSelectionOnly.Checked and (FSelectionLines <> nil) then
   begin
     Source := FSelectionLines;
+    SourceStyles := FSelectionStyles;
     FirstLine := FSelectionFirstLine;
     LastLine := FSelectionFirstLine + FSelectionLines.Count - 1;
   end
   else
   begin
     Source := FFullLines;
+    SourceStyles := FFullStyles;
     FirstLine := 0;
     LastLine := FFullLines.Count - 1;
   end;
-  NewLayout := MakePrintLayout(Source, Options, FirstLine, LastLine);
+  NewLayout := MakePrintLayout(Source, Options, FirstLine, LastLine, SourceStyles);
   FreeAndNil(FLayout);
   FLayout := NewLayout;
   if FCurrent >= FLayout.PageCount then
@@ -370,8 +387,8 @@ begin
   FImage.Picture.Bitmap.Assign(FBitmap);
   FImage.Width := Round(FLayout.PageWidth * FZoom / 100);
   FImage.Height := Round(FLayout.PageHeight * FZoom / 100);
-  FImage.Left := 16;
   FImage.Top := 16;
+  CenterPreview;
 end;
 
 procedure TPrintPreviewForm.UpdateControls;
@@ -441,6 +458,21 @@ begin
   if FZoom > 200 then FZoom := 200;
   RenderPage;
   UpdateControls;
+end;
+
+procedure TPrintPreviewForm.DoScrollResize(Sender: TObject);
+begin
+  CenterPreview;
+end;
+
+procedure TPrintPreviewForm.CenterPreview;
+var
+  L: Integer;
+begin
+  if FImage = nil then Exit;
+  L := (FScroll.ClientWidth - FImage.Width) div 2;
+  if L < 16 then L := 16;
+  FImage.Left := L;
 end;
 
 procedure TPrintPreviewForm.DoPrint(Sender: TObject);

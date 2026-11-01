@@ -18,6 +18,7 @@ type
     Header: Boolean;
     Footer: Boolean;
     SelectionOnly: Boolean;
+    SyntaxHighlighting: Boolean;
     MarginLeft: Integer;
     MarginTop: Integer;
     MarginRight: Integer;
@@ -27,9 +28,19 @@ type
     TabSize: Integer;
   end;
 
+  TPrintStyle = record
+    Start: Integer; // 0-based position in the source line, UTF-16 units
+    Len: Integer;
+    Color: TColor;
+    FontStyles: TFontStyles;
+  end;
+  TPrintStyles = array of TPrintStyle;
+  TPrintLineStyles = array of TPrintStyles;
+
   TPrintLine = record
-    Text: string;
+    Text: UnicodeString;
     SourceLine: Integer;
+    Styles: TPrintStyles;
   end;
 
   TPrintPage = record
@@ -56,14 +67,24 @@ type
     FCharWidth: Integer;
     FNumberWidth: Integer;
     FPageCount: Integer;
-    procedure AddLine(const AText: string; ASourceLine: Integer);
+    procedure InitLayout(ASource: TStrings; const AOptions: TPrintOptions;
+      ACanvas: TCanvas; AFirstLine, ALastLine, APageWidth, APageHeight: Integer;
+      const ALineStyles: TPrintLineStyles);
+    procedure AddLine(const AText: UnicodeString; ASourceLine: Integer;
+      const AStyles: TPrintStyles);
     procedure BuildLines(ASource: TStrings; AFirstLine, ALastLine: Integer;
-      ACanvas: TCanvas);
-    function ExpandTabs(const AText: string): string;
+      ACanvas: TCanvas; const ALineStyles: TPrintLineStyles);
+    procedure ExpandTabs(const AText: UnicodeString; const AStyles: TPrintStyles;
+      out AExpanded: UnicodeString; out AExpandedStyles: TPrintStyles);
     function ExpandPageText(const AText: string; APage, APageCount: Integer): string;
+    procedure DrawStyledText(ACanvas: TCanvas; AX, AY: Integer;
+      const AText: UnicodeString; const AStyles: TPrintStyles);
   public
     constructor Create(ASource: TStrings; const AOptions: TPrintOptions;
-      ACanvas: TCanvas; AFirstLine, ALastLine, APageWidth, APageHeight: Integer);
+      ACanvas: TCanvas; AFirstLine, ALastLine, APageWidth, APageHeight: Integer); overload;
+    constructor Create(ASource: TStrings; const AOptions: TPrintOptions;
+      ACanvas: TCanvas; AFirstLine, ALastLine, APageWidth, APageHeight: Integer;
+      const ALineStyles: TPrintLineStyles); overload;
     destructor Destroy; override;
     procedure DrawPage(ACanvas: TCanvas; APageIndex: Integer;
       AOffsetX, AOffsetY: Integer; AScaleX, AScaleY: Double;
@@ -75,10 +96,13 @@ type
 
 function MmToPrintPx(AMm: Integer): Integer;
 function PrintOptionsFromSettings(ASettings: TAppSettings): TPrintOptions;
+function SlicePrintStyles(const AStyles: TPrintStyles; AStart, ALen: Integer): TPrintStyles;
 procedure GetPrintPageGeometry(out ALogicalWidth, ALogicalHeight: Integer;
   out AScaleX, AScaleY: Double);
 function MakePrintLayout(ASource: TStrings; const AOptions: TPrintOptions;
-  AFirstLine, ALastLine: Integer): TPrintLayout;
+  AFirstLine, ALastLine: Integer): TPrintLayout; overload;
+function MakePrintLayout(ASource: TStrings; const AOptions: TPrintOptions;
+  AFirstLine, ALastLine: Integer; const ALineStyles: TPrintLineStyles): TPrintLayout; overload;
 procedure DrawPrintPreviewPage(ALayout: TPrintLayout; APageIndex: Integer;
   ABitmap: TBitmap; APageNumber, APageCount: Integer; const ATitle: string);
 
@@ -96,6 +120,7 @@ begin
   Result.Header := ASettings.PrintHeader;
   Result.Footer := ASettings.PrintFooter;
   Result.SelectionOnly := ASettings.PrintSelectionOnly;
+  Result.SyntaxHighlighting := ASettings.PrintSyntaxHighlighting;
   Result.MarginLeft := ASettings.PrintMarginLeft;
   Result.MarginTop := ASettings.PrintMarginTop;
   Result.MarginRight := ASettings.PrintMarginRight;
@@ -106,6 +131,28 @@ begin
   if Result.FontSize < 6 then Result.FontSize := 10;
   Result.TabSize := ASettings.TabSize;
   if Result.TabSize < 1 then Result.TabSize := 4;
+end;
+
+function SlicePrintStyles(const AStyles: TPrintStyles; AStart, ALen: Integer): TPrintStyles;
+var
+  I, S, E, N: Integer;
+begin
+  SetLength(Result, 0);
+  if ALen <= 0 then Exit;
+  for I := 0 to High(AStyles) do
+  begin
+    S := AStyles[I].Start;
+    E := S + AStyles[I].Len;
+    if S < AStart then S := AStart;
+    if E > AStart + ALen then E := AStart + ALen;
+    if E <= S then Continue;
+    N := Length(Result);
+    SetLength(Result, N + 1);
+    Result[N].Start := S - AStart;
+    Result[N].Len := E - S;
+    Result[N].Color := AStyles[I].Color;
+    Result[N].FontStyles := AStyles[I].FontStyles;
+  end;
 end;
 
 procedure GetPrintPageGeometry(out ALogicalWidth, ALogicalHeight: Integer;
@@ -138,12 +185,31 @@ end;
 constructor TPrintLayout.Create(ASource: TStrings;
   const AOptions: TPrintOptions; ACanvas: TCanvas;
   AFirstLine, ALastLine, APageWidth, APageHeight: Integer);
+begin
+  inherited Create;
+  InitLayout(ASource, AOptions, ACanvas, AFirstLine, ALastLine,
+    APageWidth, APageHeight, nil);
+end;
+
+constructor TPrintLayout.Create(ASource: TStrings;
+  const AOptions: TPrintOptions; ACanvas: TCanvas;
+  AFirstLine, ALastLine, APageWidth, APageHeight: Integer;
+  const ALineStyles: TPrintLineStyles);
+begin
+  inherited Create;
+  InitLayout(ASource, AOptions, ACanvas, AFirstLine, ALastLine,
+    APageWidth, APageHeight, ALineStyles);
+end;
+
+procedure TPrintLayout.InitLayout(ASource: TStrings;
+  const AOptions: TPrintOptions; ACanvas: TCanvas;
+  AFirstLine, ALastLine, APageWidth, APageHeight: Integer;
+  const ALineStyles: TPrintLineStyles);
 var
   S: string;
   LinesPerPage: Integer;
   Pages, I, N: Integer;
 begin
-  inherited Create;
   FOptions := AOptions;
   FPageWidth := APageWidth;
   FPageHeight := APageHeight;
@@ -187,7 +253,7 @@ begin
   if FContentWidth < FCharWidth * 4 then
     FContentWidth := FCharWidth * 4;
 
-  BuildLines(ASource, AFirstLine, ALastLine, ACanvas);
+  BuildLines(ASource, AFirstLine, ALastLine, ACanvas, ALineStyles);
 
   LinesPerPage := FContentHeight div FLineHeight;
   if LinesPerPage < 1 then LinesPerPage := 1;
@@ -210,30 +276,82 @@ begin
   inherited;
 end;
 
-function TPrintLayout.ExpandTabs(const AText: string): string;
+procedure TPrintLayout.ExpandTabs(const AText: UnicodeString;
+  const AStyles: TPrintStyles; out AExpanded: UnicodeString;
+  out AExpandedStyles: TPrintStyles);
+
+  procedure AppendStyle(AStart, ALen: Integer; AColor: TColor;
+    AFontStyles: TFontStyles);
+  var
+    N: Integer;
+  begin
+    if ALen <= 0 then Exit;
+    N := Length(AExpandedStyles);
+    if (N > 0) and
+       (AExpandedStyles[N - 1].Start + AExpandedStyles[N - 1].Len = AStart) and
+       (AExpandedStyles[N - 1].Color = AColor) and
+       (AExpandedStyles[N - 1].FontStyles = AFontStyles) then
+      Inc(AExpandedStyles[N - 1].Len, ALen)
+    else
+    begin
+      SetLength(AExpandedStyles, N + 1);
+      AExpandedStyles[N].Start := AStart;
+      AExpandedStyles[N].Len := ALen;
+      AExpandedStyles[N].Color := AColor;
+      AExpandedStyles[N].FontStyles := AFontStyles;
+    end;
+  end;
+
+  function StyleAt(APos: Integer; out AColor: TColor;
+    out AFontStyles: TFontStyles): Boolean;
+  var
+    J: Integer;
+  begin
+    Result := False;
+    AColor := clBlack;
+    AFontStyles := [];
+    for J := 0 to High(AStyles) do
+      if (APos >= AStyles[J].Start) and
+         (APos < AStyles[J].Start + AStyles[J].Len) then
+      begin
+        AColor := AStyles[J].Color;
+        AFontStyles := AStyles[J].FontStyles;
+        Exit(True);
+      end;
+  end;
+
 var
-  I, Col: Integer;
+  I, N, Col: Integer;
+  Ch: WideChar;
+  AColor: TColor;
+  AFontStyles: TFontStyles;
 begin
-  Result := '';
+  AExpanded := '';
+  AExpandedStyles := nil;
   Col := 0;
   for I := 1 to Length(AText) do
   begin
-    if AText[I] = #9 then
+    StyleAt(I - 1, AColor, AFontStyles);
+    Ch := AText[I];
+    if Ch = #9 then
     begin
-      repeat
-        Result := Result + ' ';
-        Inc(Col);
-      until (Col mod FOptions.TabSize) = 0;
+      N := FOptions.TabSize - (Col mod FOptions.TabSize);
+      if N <= 0 then N := FOptions.TabSize;
+      AExpanded := AExpanded + StringOfChar(' ', N);
+      AppendStyle(Col, N, AColor, AFontStyles);
+      Inc(Col, N);
     end
     else
     begin
-      Result := Result + AText[I];
+      AExpanded := AExpanded + Ch;
+      AppendStyle(Col, 1, AColor, AFontStyles);
       Inc(Col);
     end;
   end;
 end;
 
-procedure TPrintLayout.AddLine(const AText: string; ASourceLine: Integer);
+procedure TPrintLayout.AddLine(const AText: UnicodeString;
+  ASourceLine: Integer; const AStyles: TPrintStyles);
 var
   N: Integer;
 begin
@@ -241,13 +359,16 @@ begin
   SetLength(FLines, N + 1);
   FLines[N].Text := AText;
   FLines[N].SourceLine := ASourceLine;
+  FLines[N].Styles := AStyles;
 end;
 
 procedure TPrintLayout.BuildLines(ASource: TStrings;
-  AFirstLine, ALastLine: Integer; ACanvas: TCanvas);
+  AFirstLine, ALastLine: Integer; ACanvas: TCanvas;
+  const ALineStyles: TPrintLineStyles);
 var
-  I, MaxChars, BreakPos, P: Integer;
-  S, Part: string;
+  I, MaxChars, BreakPos, P, L: Integer;
+  Raw, S, Part: UnicodeString;
+  AStyles, PartStyles: TPrintStyles;
 begin
   ACanvas.Font.Assign(FFont);
   MaxChars := FContentWidth div FCharWidth;
@@ -256,10 +377,14 @@ begin
   if ALastLine >= ASource.Count then ALastLine := ASource.Count - 1;
   for I := AFirstLine to ALastLine do
   begin
-    S := ExpandTabs(ASource[I]);
+    Raw := UTF8Decode(ASource[I]);
+    if FOptions.SyntaxHighlighting and (I < Length(ALineStyles)) then
+      ExpandTabs(Raw, ALineStyles[I], S, AStyles)
+    else
+      ExpandTabs(Raw, nil, S, AStyles);
     if (not FOptions.WrapLines) or (Length(S) <= MaxChars) then
     begin
-      AddLine(S, I);
+      AddLine(S, I, AStyles);
       Continue;
     end;
     while Length(S) > MaxChars do
@@ -269,15 +394,25 @@ begin
       if P > 1 then
         BreakPos := P;
       Part := Copy(S, 1, BreakPos);
-      AddLine(TrimRight(Part), I);
+      L := Length(TrimRight(Part));
+      if L <= 0 then
+        Part := ''
+      else
+        Part := Copy(Part, 1, L);
+      PartStyles := SlicePrintStyles(AStyles, 0, Length(Part));
+      AddLine(Part, I, PartStyles);
       Delete(S, 1, BreakPos);
+      AStyles := SlicePrintStyles(AStyles, BreakPos, Length(S));
       while (S <> '') and (S[1] = ' ') do
+      begin
         Delete(S, 1, 1);
+        AStyles := SlicePrintStyles(AStyles, 1, Length(S));
+      end;
     end;
-    AddLine(S, I);
+    AddLine(S, I, AStyles);
   end;
   if Length(FLines) = 0 then
-    AddLine('', AFirstLine);
+    AddLine('', AFirstLine, nil);
 end;
 
 function TPrintLayout.ExpandPageText(const AText: string;
@@ -285,6 +420,74 @@ function TPrintLayout.ExpandPageText(const AText: string;
 begin
   Result := StringReplace(AText, '%p', IntToStr(APage), [rfReplaceAll]);
   Result := StringReplace(Result, '%n', IntToStr(APageCount), [rfReplaceAll]);
+end;
+
+function PrintTextColor(AColor: TColor): TColor;
+var
+  C: LongInt;
+  R, G, B, Lum: Integer;
+begin
+  if AColor = clNone then
+    Exit(clBlack);
+  C := ColorToRGB(AColor);
+  R := C and $FF;
+  G := (C shr 8) and $FF;
+  B := (C shr 16) and $FF;
+  { Keep light syntax colors readable on the white print page. }
+  Lum := (R * 299 + G * 587 + B * 114) div 1000;
+  if Lum > 205 then
+  begin
+    R := R * 65 div 100;
+    G := G * 65 div 100;
+    B := B * 65 div 100;
+  end;
+  Result := RGBToColor(R, G, B);
+end;
+
+procedure TPrintLayout.DrawStyledText(ACanvas: TCanvas; AX, AY: Integer;
+  const AText: UnicodeString; const AStyles: TPrintStyles);
+var
+  I, P, S, E, X: Integer;
+
+  procedure DrawPart(const APart: UnicodeString; AColor: TColor;
+    AFontStyles: TFontStyles);
+  var
+    Txt: string;
+  begin
+    if APart = '' then Exit;
+    ACanvas.Font.Color := AColor;
+    ACanvas.Font.Style := AFontStyles;
+    Txt := UTF8Encode(APart);
+    ACanvas.TextOut(X, AY, Txt);
+    Inc(X, ACanvas.TextWidth(Txt));
+  end;
+
+begin
+  X := AX;
+  if Length(AStyles) = 0 then
+  begin
+    DrawPart(AText, clBlack, []);
+    Exit;
+  end;
+  P := 0;
+  for I := 0 to High(AStyles) do
+  begin
+    S := AStyles[I].Start;
+    if S < 0 then S := 0;
+    if S > Length(AText) then S := Length(AText);
+    E := S + AStyles[I].Len;
+    if E > Length(AText) then E := Length(AText);
+    if E <= P then Continue;
+    if S < P then S := P;
+    if S > P then
+      DrawPart(Copy(AText, P + 1, S - P), clBlack, []);
+    if E > S then
+      DrawPart(Copy(AText, S + 1, E - S),
+        PrintTextColor(AStyles[I].Color), AStyles[I].FontStyles);
+    P := E;
+  end;
+  if P < Length(AText) then
+    DrawPart(Copy(AText, P + 1, Length(AText) - P), clBlack, []);
 end;
 
 procedure TPrintLayout.DrawPage(ACanvas: TCanvas; APageIndex: Integer;
@@ -301,6 +504,8 @@ begin
   ACanvas.Font.Assign(FFont);
   if AScaleY <> 1 then
     ACanvas.Font.Height := Round(FFont.Height * AScaleY);
+  ACanvas.Font.Color := clBlack;
+  ACanvas.Font.Style := [];
   ACanvas.Brush.Color := clWhite;
   ACanvas.FillRect(Rect(
     AOffsetX,
@@ -321,15 +526,19 @@ begin
     X := AOffsetX + Round((FLeft + FNumberWidth) * AScaleX);
     if FOptions.LineNumbers then
     begin
+      ACanvas.Font.Color := clBlack;
+      ACanvas.Font.Style := [];
       Num := IntToStr(FLines[I].SourceLine + 1);
       LX := AOffsetX + Round((FLeft + FNumberWidth - 6) * AScaleX);
       ACanvas.TextOut(LX - ACanvas.TextWidth(Num), Y, Num);
     end;
-    ACanvas.TextOut(X, Y, FLines[I].Text);
+    DrawStyledText(ACanvas, X, Y, FLines[I].Text, FLines[I].Styles);
   end;
 
   if FOptions.Footer then
   begin
+    ACanvas.Font.Color := clBlack;
+    ACanvas.Font.Style := [];
     S := ExpandPageText(Tr('Page %p of %n'), APageNumber, APageCount);
     Y := AOffsetY + Round((FPageHeight - FBottom - FLineHeight) * AScaleY);
     LX := AOffsetX + Round((FPageWidth - ACanvas.TextWidth(S)) / 2);
@@ -350,6 +559,24 @@ begin
     Bmp.SetSize(8, 8);
     Result := TPrintLayout.Create(ASource, AOptions, Bmp.Canvas,
       AFirstLine, ALastLine, PW, PH);
+  finally
+    Bmp.Free;
+  end;
+end;
+
+function MakePrintLayout(ASource: TStrings; const AOptions: TPrintOptions;
+  AFirstLine, ALastLine: Integer; const ALineStyles: TPrintLineStyles): TPrintLayout;
+var
+  PW, PH: Integer;
+  ScaleX, ScaleY: Double;
+  Bmp: TBitmap;
+begin
+  GetPrintPageGeometry(PW, PH, ScaleX, ScaleY);
+  Bmp := TBitmap.Create;
+  try
+    Bmp.SetSize(8, 8);
+    Result := TPrintLayout.Create(ASource, AOptions, Bmp.Canvas,
+      AFirstLine, ALastLine, PW, PH, ALineStyles);
   finally
     Bmp.Free;
   end;

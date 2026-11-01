@@ -220,9 +220,10 @@ Lazarus.
 
 1. Open a long document with tabs and long lines; run **File > Print Preview**.
    Verify pagination, wrapping, line numbers, header/footer and margins.
-2. Change font, font size, margins and page options in the preview's right-hand
-   panel; verify the preview and page count update immediately. Change the same
-   values in Preferences > Printing and verify a new preview uses them.
+2. Change font, font size, syntax highlighting, margins and page options in the
+   preview's right-hand panel; verify the preview and page count update
+   immediately. Change the same values in Preferences > Printing and verify a
+   new preview uses them.
 3. Select several lines and print/preview; in the preview enable **Print
    selection only** and verify the selected text (not the whole document)
    appears. For direct printing, answer **Yes** to the selection prompt.

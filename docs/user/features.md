@@ -135,9 +135,9 @@ See [External tools](tools.md) for the full option list and examples.
 ## Printing
 
 **File > Print Preview** opens a dialog with the page on the left and live
-options on the right: print font and size, line numbers, wrapping, header and
-footer, selection-only mode, and margins. Changes rebuild the preview
-immediately. Use **File > Print...** to send the same layout to a printer, or
+options on the right: print font and size, syntax highlighting, line numbers,
+wrapping, header and footer, selection-only mode, and margins. Changes rebuild
+the preview immediately. Use **File > Print...** to send the same layout to a printer, or
 **File > Page Setup...** for a compact margins/options dialog. If text is
 selected, direct printing asks whether to print only the selection; in the
 preview the **Print selection only** option is enabled whenever a selection
