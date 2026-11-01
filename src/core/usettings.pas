@@ -15,9 +15,11 @@ type
     FFindHistory: TStringList;
     FLanguageIndent: TStringList;
     FEncodingByFile: TStringList;
+    FShortcuts: TStringList;
   public
     FontName: string;
     FontSize: Integer;
+    FontLigatures: Boolean;
     TabSize: Integer;
     TabSpaces: Boolean;
     WordWrap: Boolean;
@@ -41,6 +43,9 @@ type
     FindWords: Boolean;
     FindRegex: Boolean;
     FindWrap: Boolean;
+    FindFilesCase: Boolean;
+    FindFilesWords: Boolean;
+    FindFilesRegex: Boolean;
     RecentMax: Integer;
     ShowWhitespace: Boolean;
     ShowFolding: Boolean;
@@ -50,6 +55,17 @@ type
     AutoSnapshotSec: Integer;
     BackupDir: string;
     BackupKeep: Integer;
+    PrintFontName: string;
+    PrintFontSize: Integer;
+    PrintSelectionOnly: Boolean;
+    PrintLineNumbers: Boolean;
+    PrintWrapLines: Boolean;
+    PrintHeader: Boolean;
+    PrintFooter: Boolean;
+    PrintMarginLeft: Integer;
+    PrintMarginTop: Integer;
+    PrintMarginRight: Integer;
+    PrintMarginBottom: Integer;
     Language: string;
     MacroPath: string;
     SingleInstance: Boolean;
@@ -75,6 +91,7 @@ type
     property FindHistory: TStringList read FFindHistory;
     property LanguageIndent: TStringList read FLanguageIndent;
     property EncodingByFile: TStringList read FEncodingByFile;
+    property Shortcuts: TStringList read FShortcuts;
   end;
 
 implementation
@@ -87,8 +104,10 @@ begin
   FFindHistory := TStringList.Create;
   FLanguageIndent := TStringList.Create;
   FEncodingByFile := TStringList.Create;
+  FShortcuts := TStringList.Create;
   FontName := 'DejaVu Sans Mono';
   FontSize := 11;
+  FontLigatures := False;
   TabSize := 4;
   TabSpaces := False;
   WordWrap := False;
@@ -102,7 +121,7 @@ begin
   AutoPair := False;
   SmoothScroll := True;
   CaretBlink := True;
-  ColorScheme := 'TyEditor';
+  ColorScheme := 'GitHub';
   CustomColorSchemeFile := '';
   DefaultEncoding := 'UTF-8';
   {$IFDEF WINDOWS}
@@ -116,6 +135,9 @@ begin
   FindWords := False;
   FindRegex := False;
   FindWrap := True;
+  FindFilesCase := False;
+  FindFilesWords := False;
+  FindFilesRegex := False;
   RecentMax := 15;
   ShowWhitespace := False;
   ShowFolding := True;
@@ -125,6 +147,17 @@ begin
   AutoSnapshotSec := 30;
   BackupDir := '';
   BackupKeep := 20;
+  PrintFontName := 'Courier New';
+  PrintFontSize := 10;
+  PrintSelectionOnly := False;
+  PrintLineNumbers := True;
+  PrintWrapLines := True;
+  PrintHeader := False;
+  PrintFooter := True;
+  PrintMarginLeft := 15;
+  PrintMarginTop := 15;
+  PrintMarginRight := 15;
+  PrintMarginBottom := 15;
   Language := 'auto';
   MacroPath := '';
   SingleInstance := True;
@@ -146,6 +179,7 @@ begin
   FFindHistory.Free;
   FLanguageIndent.Free;
   FEncodingByFile.Free;
+  FShortcuts.Free;
   inherited;
 end;
 
@@ -167,6 +201,7 @@ begin
       Obj := TJSONObject(Data);
       FontName := JsonStr(Obj, 'font_name', FontName);
       FontSize := JsonInt(Obj, 'font_size', FontSize);
+      FontLigatures := JsonBool(Obj, 'font_ligatures', FontLigatures);
       TabSize := JsonInt(Obj, 'tab_size', TabSize);
       TabSpaces := JsonBool(Obj, 'tab_spaces', TabSpaces);
       WordWrap := JsonBool(Obj, 'word_wrap', WordWrap);
@@ -212,8 +247,15 @@ begin
       SmoothScroll := JsonBool(Obj, 'smooth_scroll', SmoothScroll);
       CaretBlink := JsonBool(Obj, 'caret_blink', CaretBlink);
       ColorScheme := JsonStr(Obj, 'color_scheme', ColorScheme);
-      if SameText(ColorScheme, 'GitHub') then
-        ColorScheme := 'TyEditor';
+      if SameText(ColorScheme, 'TyEditor') then
+        ColorScheme := 'GitHub';
+      FShortcuts.Clear;
+      if Obj.Find('shortcuts') is TJSONObject then
+      begin
+        O := TJSONObject(Obj.Find('shortcuts'));
+        for i := 0 to O.Count - 1 do
+          FShortcuts.Values[O.Names[i]] := O.Items[i].AsString;
+      end;
       CustomColorSchemeFile := JsonStr(Obj, 'custom_color_scheme', CustomColorSchemeFile);
       DefaultEncoding := JsonStr(Obj, 'default_encoding', DefaultEncoding);
       DefaultEol := JsonStr(Obj, 'default_eol', DefaultEol);
@@ -223,6 +265,9 @@ begin
       FindWords := JsonBool(Obj, 'find_words', FindWords);
       FindRegex := JsonBool(Obj, 'find_regex', FindRegex);
       FindWrap := JsonBool(Obj, 'find_wrap', FindWrap);
+      FindFilesCase := JsonBool(Obj, 'find_files_case', FindFilesCase);
+      FindFilesWords := JsonBool(Obj, 'find_files_words', FindFilesWords);
+      FindFilesRegex := JsonBool(Obj, 'find_files_regex', FindFilesRegex);
       RecentMax := JsonInt(Obj, 'recent_max', RecentMax);
       if RecentMax < 1 then RecentMax := 1;
       ShowWhitespace := JsonBool(Obj, 'show_whitespace', ShowWhitespace);
@@ -233,6 +278,17 @@ begin
       AutoSnapshotSec := JsonInt(Obj, 'auto_snapshot_sec', AutoSnapshotSec);
       BackupDir := JsonStr(Obj, 'backup_dir', BackupDir);
       BackupKeep := JsonInt(Obj, 'backup_keep', BackupKeep);
+      PrintFontName := JsonStr(Obj, 'print_font_name', PrintFontName);
+      PrintFontSize := JsonInt(Obj, 'print_font_size', PrintFontSize);
+      PrintSelectionOnly := JsonBool(Obj, 'print_selection_only', PrintSelectionOnly);
+      PrintLineNumbers := JsonBool(Obj, 'print_line_numbers', PrintLineNumbers);
+      PrintWrapLines := JsonBool(Obj, 'print_wrap_lines', PrintWrapLines);
+      PrintHeader := JsonBool(Obj, 'print_header', PrintHeader);
+      PrintFooter := JsonBool(Obj, 'print_footer', PrintFooter);
+      PrintMarginLeft := JsonInt(Obj, 'print_margin_left', PrintMarginLeft);
+      PrintMarginTop := JsonInt(Obj, 'print_margin_top', PrintMarginTop);
+      PrintMarginRight := JsonInt(Obj, 'print_margin_right', PrintMarginRight);
+      PrintMarginBottom := JsonInt(Obj, 'print_margin_bottom', PrintMarginBottom);
       if BackupKeep < 1 then BackupKeep := 1;
       if AutoSnapshotSec < 5 then AutoSnapshotSec := 5;
       Language := JsonStr(Obj, 'language', Language);
@@ -274,6 +330,7 @@ begin
   try
     Obj.Add('font_name', FontName);
     Obj.Add('font_size', FontSize);
+    Obj.Add('font_ligatures', FontLigatures);
     Obj.Add('tab_size', TabSize);
     Obj.Add('tab_spaces', TabSpaces);
     Obj.Add('word_wrap', WordWrap);
@@ -310,6 +367,9 @@ begin
     Obj.Add('find_words', FindWords);
     Obj.Add('find_regex', FindRegex);
     Obj.Add('find_wrap', FindWrap);
+    Obj.Add('find_files_case', FindFilesCase);
+    Obj.Add('find_files_words', FindFilesWords);
+    Obj.Add('find_files_regex', FindFilesRegex);
     Obj.Add('recent_max', RecentMax);
     Obj.Add('show_whitespace', ShowWhitespace);
     Obj.Add('show_folding', ShowFolding);
@@ -319,6 +379,17 @@ begin
     Obj.Add('auto_snapshot_sec', AutoSnapshotSec);
     Obj.Add('backup_dir', BackupDir);
     Obj.Add('backup_keep', BackupKeep);
+    Obj.Add('print_font_name', PrintFontName);
+    Obj.Add('print_font_size', PrintFontSize);
+    Obj.Add('print_selection_only', PrintSelectionOnly);
+    Obj.Add('print_line_numbers', PrintLineNumbers);
+    Obj.Add('print_wrap_lines', PrintWrapLines);
+    Obj.Add('print_header', PrintHeader);
+    Obj.Add('print_footer', PrintFooter);
+    Obj.Add('print_margin_left', PrintMarginLeft);
+    Obj.Add('print_margin_top', PrintMarginTop);
+    Obj.Add('print_margin_right', PrintMarginRight);
+    Obj.Add('print_margin_bottom', PrintMarginBottom);
     Obj.Add('language', Language);
     Obj.Add('macro_path', MacroPath);
     Obj.Add('single_instance', SingleInstance);
@@ -331,6 +402,10 @@ begin
     Obj.Add('window_width', WindowWidth);
     Obj.Add('window_height', WindowHeight);
     Obj.Add('window_maximized', WindowMaximized);
+    Obj2 := TJSONObject.Create;
+    for i := 0 to FShortcuts.Count - 1 do
+      Obj2.Add(FShortcuts.Names[i], FShortcuts.ValueFromIndex[i]);
+    Obj.Add('shortcuts', Obj2);
     Arr := TJSONArray.Create;
     for i := 0 to FRecent.Count - 1 do
       Arr.Add(FRecent[i]);

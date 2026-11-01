@@ -2,7 +2,9 @@
 
 Menus show the active shortcuts for the current platform. The table below uses
 `Ctrl`; on macOS the windowing layer maps the same menu shortcuts to the
-platform command key where appropriate.
+platform command key where appropriate. Menu shortcuts can be changed in
+**Settings > Keyboard Shortcuts...**. On macOS, Preferences and Keyboard
+Shortcuts are provided by the native application menu.
 
 ## Files and tabs
 
@@ -15,6 +17,8 @@ platform command key where appropriate.
 | `Ctrl+R` | Reload current file |
 | `Ctrl+W` | Close current tab |
 | `Ctrl+Shift+T` | Reopen the most recently closed tab |
+| `Ctrl+P` | Print |
+| `Ctrl+Shift+P` | Print preview |
 
 Double-clicking empty space in the tab bar also creates a new document.
 
@@ -68,6 +72,8 @@ Double-clicking empty space in the tab bar also creates a new document.
 | `Ctrl+F9` | Play bound macro |
 | `Ctrl+Alt+M` | Open macro manager |
 | `Ctrl+Alt+P` | Open Preferences |
+| `Cmd+,` (macOS) | Open Preferences |
+| `Cmd+Alt+K` (macOS) | Open Keyboard Shortcuts |
 
 ## Text-editor defaults
 

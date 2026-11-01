@@ -198,8 +198,8 @@ Lazarus.
    restarting applies it.
 4. Add `languages/tyeditor.ja.json` with one translation; Preferences discovers
    the new language automatically.
-5. Check that new plugin, tool and syntax strings are translated in the Chinese
-   UI.
+5. Check that new plugin, tool, print and settings strings are translated in the
+   Chinese UI.
 
 ### 11. Platform and packaging
 
@@ -214,3 +214,38 @@ Lazarus.
    with `$ORIGIN` RUNPATH on an aarch64 system.
 5. Install the Linux desktop entry with `scripts/package/install-desktop.sh` and
    verify the menu entry and icon.
+
+
+### 12. Printing
+
+1. Open a long document with tabs and long lines; run **File > Print Preview**.
+   Verify pagination, wrapping, line numbers, header/footer and margins against
+   **File > Page Setup...**.
+2. Change margins and page options in Preferences > Printing, reopen preview and
+   verify the layout uses the new values.
+3. Select several lines and print/preview; answer **Yes** to print only the
+   selection and verify the selected text (not the whole document) appears.
+4. Open the system print dialog from **File > Print...** and from the preview's
+   **Print...** button; cancel and verify TyEditor remains usable. If no printer
+   is configured, verify the explanatory message instead of a crash.
+5. Toggle line numbers, wrapping and header/footer and verify the preview updates
+   after reopening it.
+
+### 13. Shortcuts and Preferences
+
+1. Open **Settings > Keyboard Shortcuts...**; verify all command rows and their
+   current shortcuts appear.
+2. Assign a new combination, close and reopen the dialog, then restart TyEditor
+   and verify the menu shows the saved combination.
+3. Try to assign a shortcut already used by another command, cancel the
+   replacement prompt, then repeat and confirm replacement; use **Reset
+   Selected** and **Reset All** and verify defaults return.
+4. Cancel the dialog after changing a shortcut and verify the previous value is
+   restored.
+5. Open Preferences and switch all five categories; verify the pages scroll when
+   the window is small, and that backup folder shows the effective default path.
+6. Change search options in Find/Replace and Find in Files, close both dialogs,
+   restart TyEditor and verify the last-used options are restored.
+7. On macOS, verify **Preferences...** (`Cmd+,`) and **Keyboard Shortcuts...**
+   (`Cmd+Alt+K`) appear in the application menu and no top-level Settings menu
+   is shown.

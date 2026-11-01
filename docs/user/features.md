@@ -99,7 +99,7 @@ syntax lexer is active.
 Editor colors are independent from the interface theme. Each built-in scheme
 has a light and a dark palette, selected automatically by **Dark Theme**:
 
-- TyEditor
+- GitHub
 - One Dark
 - Solarized
 - Monokai
@@ -132,23 +132,47 @@ code and standard error.
 
 See [External tools](tools.md) for the full option list and examples.
 
+## Printing
+
+**File > Print Preview** lays out the current document with black-and-white
+text, optional line numbers, wrapping, header and footer, and configurable
+margins. Use **File > Print...** to send the same layout to a printer, or
+**File > Page Setup...** to change margins and page options. If text is selected,
+TyEditor asks whether to print only the selection.
+
+Page options are also available under **Settings > Preferences... > Printing**
+and are stored in `settings.json`.
+
 ## Settings
 
-Open **Settings > Preferences...** (`Ctrl+Alt+P`). Settings are grouped into:
+Open **Settings > Preferences...** (`Ctrl+Alt+P`). The redesigned dialog uses a
+scrollable category list:
 
-- **General** — interface language, interface theme, dark mode, session restore
-  and automatic snapshot interval.
-- **Editor** — font, size, tab width, spaces for tabs, word wrap, whitespace,
-  line numbers and number style, current line, folding, ruler, bookmark margin,
-  minimap/micromap, auto-indent, auto-pair, smooth scrolling, caret blinking and
-  editor color scheme.
+- **General** — interface language and theme, dark mode, session restore,
+  single-instance mode, always-on-top and the recent-file limit.
+- **Appearance** — editor font family and size, font ligatures and color scheme.
+- **Editor** — tab width, spaces for tabs, word wrap, whitespace, line numbers and
+  number style, current line, indent guides, folding, ruler, bookmark margin,
+  minimap/micromap, auto-indent, auto-pair, smooth scrolling and caret blinking.
 - **Files** — default encoding and line endings, trim trailing spaces on save,
-  ensure final newline, and recent-file limit.
-- **Search** — default case, whole-word, regex and wrap-around options.
+  ensure final newline, backup folder, retain count and automatic session-save
+  interval.
+- **Printing** — font family and size, line numbers, wrapping, header/footer,
+  selection-only mode and page margins.
 
-Settings are JSON and are stored next to the session file. Some advanced values
-(such as backup directory and retain count) can be edited directly in
-`settings.json`.
+The backup folder shows the effective default (the configuration directory's
+`backups/` folder) instead of an empty field. Choose **Default** to restore it.
+Search dialogs no longer have their own Preferences page; each dialog remembers
+its last-used case, whole-word, regex and wrap options.
+
+Use **Settings > Keyboard Shortcuts...** to inspect and change menu shortcuts.
+Defaults are restored with **Reset Selected** or **Reset All**; assigning a
+shortcut that is already in use asks whether to replace the existing command.
+On macOS, Preferences and Keyboard Shortcuts live in the application menu and
+are not user-customizable.
+
+Settings are JSON and are stored next to the session file. Automatic snapshots
+also save settings, so there is no separate **Save Settings Now** command.
 
 ## Interface language
 

@@ -86,7 +86,7 @@ function ColorSchemeNames: TStringList;
 begin
   Result := TStringList.Create;
   Result.CaseSensitive := False;
-  Result.Add('TyEditor');
+  Result.Add('GitHub');
   Result.Add('One Dark');
   Result.Add('Solarized');
   Result.Add('Monokai');
@@ -97,7 +97,7 @@ end;
 
 function DefaultColorSchemeName: string;
 begin
-  Result := 'TyEditor';
+  Result := 'GitHub';
 end;
 
 function FindColorScheme(const AName: string): TColorSchemeDef;

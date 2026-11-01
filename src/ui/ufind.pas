@@ -62,6 +62,7 @@ type
     procedure ShowFind(AReplace: Boolean);
     procedure FocusFind;
     procedure ApplyDefaults(ACase, AWords, ARegex, AWrap: Boolean);
+    procedure GetOptions(out ACase, AWords, ARegex, AWrap: Boolean);
     procedure SetFindText(const AText: string);
     procedure SetHistory(AHistory: TStringList);
     procedure FindNext;
@@ -530,6 +531,14 @@ begin
   FWords.Checked := AWords;
   FRegex.Checked := ARegex;
   FWrap.Checked := AWrap;
+end;
+
+procedure TFindForm.GetOptions(out ACase, AWords, ARegex, AWrap: Boolean);
+begin
+  ACase := FCase.Checked;
+  AWords := FWords.Checked;
+  ARegex := FRegex.Checked;
+  AWrap := FWrap.Checked;
 end;
 
 procedure TFindForm.SetFindText(const AText: string);

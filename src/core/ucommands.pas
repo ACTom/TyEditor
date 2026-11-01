@@ -12,6 +12,7 @@ type
     mcNone,
     mcNew, mcOpen, mcSave, mcSaveAs, mcSaveAll, mcReload, mcClose,
     mcCloseOthers, mcCloseAll, mcReopen, mcExit,
+    mcPrint, mcPrintPreview, mcPageSetup,
     mcUndo, mcRedo, mcCut, mcCopy, mcPaste, mcDelete, mcSelectAll,
     mcDupLine, mcDelLine, mcMoveUp, mcMoveDown, mcIndent, mcUnindent,
     mcComment, mcUncomment, mcMatchBracket, mcUpper, mcLower, mcTitle,
@@ -29,7 +30,7 @@ type
     mcMacroRecord, mcMacroPlay, mcMacroPlayN, mcMacroSave, mcMacroLoad,
     mcMacroManager, mcMacroPlayBound,
     mcManageTools, mcReloadTools,
-    mcCopyPath, mcAbout, mcPreferences, mcSaveSettings
+    mcCopyPath, mcAbout, mcPreferences, mcKeyboardShortcuts
   );
 
 function SC(AKey: Word; AShift: TShiftState): TShortCut;

@@ -92,7 +92,7 @@ begin
   AEditor.OptNumbersShowFirst := not SameText(ASettings.NumbersStyle, 'none');
   AEditor.OptCaretVirtual := False;
   AEditor.OptCaretManyAllowed := False;
-  AEditor.OptShowFontLigatures := False;
+  AEditor.OptShowFontLigatures := ASettings.FontLigatures;
   AEditor.OptScrollSmooth := ASettings.SmoothScroll;
   AEditor.OptCaretBlinkEnabled := ASettings.CaretBlink;
   AEditor.OptScrollbarsNew := True;

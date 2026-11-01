@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Menus, LCLType,
-  utranslation, ucommands;
+  utranslation, ucommands, ukeybindings;
 
 type
   TMenuBuilder = class
@@ -23,6 +23,7 @@ type
     FMinimapItem, FMicromapItem, FAlwaysOnTopItem, FThemeDarkItem: TMenuItem;
     FResultsItem, FMacroRecordItem, FPluginMenu: TMenuItem;
     FToolsMenu: TMenuItem;
+    FSettingsMenu: TMenuItem;
     function AddItem(AParent: TMenuItem; const ACaption: string;
       AShortCut: TShortCut; ACommand: TMenuCmd): TMenuItem;
     procedure AddSep(AParent: TMenuItem);
@@ -55,6 +56,7 @@ type
     property MacroRecordItem: TMenuItem read FMacroRecordItem;
     property PluginMenu: TMenuItem read FPluginMenu;
     property ToolsMenu: TMenuItem read FToolsMenu;
+    property SettingsMenu: TMenuItem read FSettingsMenu;
   end;
 
 implementation
@@ -76,6 +78,8 @@ begin
   if AShortCut <> 0 then
     Result.ShortCut := AShortCut;
   Result.Tag := Ord(ACommand);
+  if ACommand <> mcNone then
+    Result.Name := ShortcutCommandID(ACommand);
   Result.OnClick := FOnCommand;
   AParent.Add(Result);
 end;
@@ -108,6 +112,11 @@ begin
   AddItem(M, 'Save &As...', 0, mcSaveAs);
   AddItem(M, 'Save A&ll', SC(Ord('S'), [ssCtrl, ssShift]), mcSaveAll);
   AddItem(M, '&Reload', SC(Ord('R'), [ssCtrl]), mcReload);
+  AddItem(M, 'Copy File &Path', 0, mcCopyPath);
+  AddSep(M);
+  AddItem(M, '&Print...', SC(Ord('P'), [ssCtrl]), mcPrint);
+  AddItem(M, 'Print Pre&view', SC(Ord('P'), [ssCtrl, ssShift]), mcPrintPreview);
+  AddItem(M, 'Page Set&up...', 0, mcPageSetup);
   AddSep(M);
   AddItem(M, '&Close', SC(Ord('W'), [ssCtrl]), mcClose);
   AddItem(M, 'Close &Others', 0, mcCloseOthers);
@@ -230,10 +239,18 @@ begin
 
   FPluginMenu := AddSub(FMainMenu.Items, '&Plugins');
 
-  M := AddSub(FMainMenu.Items, 'S&ettings');
-  AddItem(M, '&Preferences...', SC(Ord('P'), [ssCtrl, ssAlt]), mcPreferences);
-  AddItem(M, '&Save Settings Now', 0, mcSaveSettings);
-  AddItem(M, 'Copy File &Path', 0, mcCopyPath);
+  {$IFDEF LCLCocoa}
+  { macOS puts these in the application menu; do not create a top-level
+    Settings menu.  The hidden group is picked up by TMainForm. }
+  FSettingsMenu := TMenuItem.Create(FOwner);
+  FSettingsMenu.Name := 'AppSettingsMenu';
+  AddItem(FSettingsMenu, '&Preferences...', SC(Ord(','), [ssMeta]), mcPreferences);
+  AddItem(FSettingsMenu, '&Keyboard Shortcuts...', SC(Ord('K'), [ssMeta, ssAlt]), mcKeyboardShortcuts);
+  {$ELSE}
+  FSettingsMenu := AddSub(FMainMenu.Items, 'S&ettings');
+  AddItem(FSettingsMenu, '&Preferences...', SC(Ord('P'), [ssCtrl, ssAlt]), mcPreferences);
+  AddItem(FSettingsMenu, '&Keyboard Shortcuts...', 0, mcKeyboardShortcuts);
+  {$ENDIF}
 
   M := AddSub(FMainMenu.Items, '&Help');
   AddItem(M, '&About TyEditor', 0, mcAbout);

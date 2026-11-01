@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, StrUtils, Math, Types, Forms, Controls, Graphics, fpjson, jsonparser,
-  Dialogs, Menus, StdCtrls, ExtCtrls, LCLType, LCLIntf, Clipbrd, LCLTranslator,
+  Dialogs, Menus, StdCtrls, ExtCtrls, LCLType, LCLIntf, Clipbrd, LCLTranslator, Printers, PrintersDlgs,
+  {$IFDEF LCLCocoa}CocoaConfig,{$ENDIF}
   tyControls.Controller, tyControls.Types, tyControls.Form, tyControls.BuiltinThemes,
   tyControls.PageControl, tyControls.TabSheet, tyControls.StatusBar,
   tyControls.Menu, tyControls.Panel, tyControls.ListBox, tyControls.TyLabel,
@@ -15,11 +16,12 @@ uses
   ATSynEdit_Bookmarks, ATSynEdit_Adapter_EControl, ATStringProc, atscrollbar,
   ec_SyntAnal,
   uutils, usettings, uencoding, ulanguage, umacro, ueditortab, usession,
-  ufind, ufindfilesdlg, utranslation, usettingsdlg, ucolorscheme,
+  ufind, ufindfilesdlg, utranslation, usettingsdlg, ushortcutsdlg, ucolorscheme,
   umacromanager, ubookmarklist, usingleinstance, ucolorschemeeditor, uplatform,
   usplitview, uresults, ustatus, ucommands, umenubuilder,
   upluginapi, upluginmanager, upluginmanagerdlg, upluginoptionsdlg, upluginrun,
-  upluginruntime, utools, utoolmanagerdlg, utoolrun;
+  upluginruntime, utools, utoolmanagerdlg, utoolrun, ukeybindings,
+  uprint, uprintsetupdlg, uprintpreview;
 
 type
   TPluginMenuAction = class
@@ -66,7 +68,9 @@ type
     FInstanceTimer: TTimer;
     FStatusPopup: TTyPopupMenu;
     FTabPopup: TTyPopupMenu;
-    FOpenTabsMenu, FPluginMenu: TMenuItem;
+    FOpenTabsMenu, FPluginMenu, FSettingsMenu: TMenuItem;
+    FShortcutManager: TShortcutManager;
+    FShortcutsReady: Boolean;
     FPluginManager: TPluginManager;
     FPluginActions: TList;
     FUserPluginNoticeShown: Boolean;
@@ -228,6 +232,8 @@ type
     procedure GoToLine;
     procedure ShowFindDlg(AReplace: Boolean);
     procedure ShowFindInFilesDlg(AReplace: Boolean);
+    procedure FindOptionsChanged(Sender: TObject);
+    procedure CaptureFindOptions;
     procedure FindNext;
     procedure FindPrevious;
 
@@ -260,7 +266,6 @@ type
     procedure MacroLoad;
     procedure ShowMacroManager;
     procedure PlayBoundMacro;
-    procedure SaveSettingsNow;
     procedure SaveSessionAndSettings;
     procedure RestoreSession;
     procedure UpdateWindowSettings;
@@ -273,6 +278,15 @@ type
     procedure ExportResults;
     procedure ShowAbout;
     procedure ShowPreferences;
+    procedure ShowKeyboardShortcuts;
+    procedure ShowPageSetup;
+    procedure ShowPrintPreview;
+    procedure PrintDocument;
+    procedure PrintLayoutDocument(ALayout: TPrintLayout; const ATitle: string);
+    function BuildPrintLayout(APromptSelection: Boolean; out ATitle: string): TPrintLayout;
+    function CollectPrintText(APromptSelection: Boolean; out ATitle: string;
+      out AFirstLine, ALastLine: Integer): TStringList;
+    procedure PrintFromPreview(Sender: TObject);
     procedure CloseAppLater(Data: PtrInt);
     procedure MaybeCloseAfterTabClose(Data: PtrInt);
     procedure DoFormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -301,6 +315,7 @@ begin
   FToolStore := TToolStore.Create(AppConfigDir);
   FSettings := TAppSettings.Create;
   FSettings.Load;
+  FShortcutManager := TShortcutManager.Create(FSettings);
   FBackupConfig := MakeBackupConfig(FSettings.BackupDir, FSettings.BackupKeep);
   if FSettings.SingleInstance then
   begin
@@ -349,8 +364,10 @@ begin
   FFindForm.SetHistory(FSettings.FindHistory);
   FFindFilesForm := TFindInFilesForm.Create(Self);
   FFindFilesForm.OnResult := @FindFileResult;
+  FFindForm.OnHide := @FindOptionsChanged;
+  FFindFilesForm.OnHide := @FindOptionsChanged;
   FFindForm.ApplyDefaults(FSettings.FindCase, FSettings.FindWords, FSettings.FindRegex, FSettings.FindWrap);
-  FFindFilesForm.ApplyDefaults(FSettings.FindCase, FSettings.FindWords, FSettings.FindRegex);
+  FFindFilesForm.ApplyDefaults(FSettings.FindFilesCase, FSettings.FindFilesWords, FSettings.FindFilesRegex);
   FBookmarkGroup := 1;
   FBookmarkForm := TBookmarkListForm.Create(Self);
   FBookmarkForm.OnJump := @BookmarkJump;
@@ -418,6 +435,7 @@ begin
   end;
   if FLanguage <> nil then FreeAndNil(FLanguage);
   if FMacro <> nil then FreeAndNil(FMacro);
+  if FShortcutManager <> nil then FreeAndNil(FShortcutManager);
   if FSettings <> nil then FreeAndNil(FSettings);
   if FLexerNames <> nil then FreeAndNil(FLexerNames);
   if FThemeNames <> nil then FreeAndNil(FThemeNames);
@@ -512,6 +530,8 @@ begin
   if AShortCut <> 0 then
     Result.ShortCut := AShortCut;
   Result.Tag := Ord(ACommand);
+  if ACommand <> mcNone then
+    Result.Name := ShortcutCommandID(ACommand);
   Result.OnClick := @MenuClick;
   Result.Checked := AChecked;
   Result.RadioItem := ARadio;
@@ -533,6 +553,7 @@ end;
 procedure TMainForm.BuildMenu;
 var
   B: TMenuBuilder;
+  I: Integer;
 begin
   B := TMenuBuilder.Create(Self, @MenuClick, @SetBookmarkGroup);
   try
@@ -562,9 +583,15 @@ begin
     FMacroRecordItem := B.MacroRecordItem;
     FPluginMenu := B.PluginMenu;
     FToolsMenu := B.ToolsMenu;
+    FSettingsMenu := B.SettingsMenu;
   finally
     B.Free;
   end;
+
+  {$IFDEF LCLCocoa}
+  if FSettingsMenu <> nil then
+    CocoaConfigMenu.appMenu.customMenus := FSettingsMenu;
+  {$ENDIF}
 
   FMenuBar := TTyMenuBar.Create(Self);
   FMenuBar.Name := 'MenuBar';
@@ -592,6 +619,17 @@ begin
   FBookmarkMarginItem.Checked := FSettings.ShowBookmarkMargin;
   RebuildPluginMenu;
   RebuildToolsMenu;
+
+  if FShortcutManager <> nil then
+  begin
+    for I := 0 to FMainMenu.Items.Count - 1 do
+      FShortcutManager.CaptureDefaults(FMainMenu.Items[I]);
+    FShortcutManager.CaptureDefaults(FSettingsMenu);
+    for I := 0 to FMainMenu.Items.Count - 1 do
+      FShortcutManager.Apply(FMainMenu.Items[I]);
+    FShortcutManager.Apply(FSettingsMenu);
+  end;
+  FShortcutsReady := True;
 end;
 procedure TMainForm.BuildBottomPanel;
 var
@@ -882,6 +920,8 @@ begin
   finally
     Names.Free;
   end;
+  if FShortcutsReady and (FShortcutManager <> nil) then
+    FShortcutManager.Apply(FColorSchemeMenu);
 end;
 
 procedure TMainForm.UpdateColorSchemeChecks;
@@ -2504,7 +2544,10 @@ begin
     mcCopyPath: CopyPath;
     mcAbout: ShowAbout;
     mcPreferences: ShowPreferences;
-    mcSaveSettings: SaveSettingsNow;
+    mcKeyboardShortcuts: ShowKeyboardShortcuts;
+    mcPageSetup: ShowPageSetup;
+    mcPrintPreview: ShowPrintPreview;
+    mcPrint: PrintDocument;
   end;
 end;
 
@@ -3159,6 +3202,48 @@ begin
   FFindFilesForm.ShowDialog(Dir, S, '', AReplace);
 end;
 
+procedure TMainForm.FindOptionsChanged(Sender: TObject);
+var
+  C, W, R, Wrap: Boolean;
+begin
+  if Sender = FFindForm then
+  begin
+    FFindForm.GetOptions(C, W, R, Wrap);
+    FSettings.FindCase := C;
+    FSettings.FindWords := W;
+    FSettings.FindRegex := R;
+    FSettings.FindWrap := Wrap;
+  end
+  else if Sender = FFindFilesForm then
+  begin
+    FFindFilesForm.GetOptions(C, W, R);
+    FSettings.FindFilesCase := C;
+    FSettings.FindFilesWords := W;
+    FSettings.FindFilesRegex := R;
+  end;
+end;
+
+procedure TMainForm.CaptureFindOptions;
+var
+  C, W, R, Wrap: Boolean;
+begin
+  if FFindForm <> nil then
+  begin
+    FFindForm.GetOptions(C, W, R, Wrap);
+    FSettings.FindCase := C;
+    FSettings.FindWords := W;
+    FSettings.FindRegex := R;
+    FSettings.FindWrap := Wrap;
+  end;
+  if FFindFilesForm <> nil then
+  begin
+    FFindFilesForm.GetOptions(C, W, R);
+    FSettings.FindFilesCase := C;
+    FSettings.FindFilesWords := W;
+    FSettings.FindFilesRegex := R;
+  end;
+end;
+
 procedure TMainForm.FindNext;
 begin
   if ActiveTab <> nil then
@@ -3633,12 +3718,6 @@ begin
   MacroPlay;
 end;
 
-procedure TMainForm.SaveSettingsNow;
-begin
-  UpdateWindowSettings;
-  FSettings.Save;
-end;
-
 procedure TMainForm.UpdateWindowSettings;
 begin
   FSettings.WindowMaximized := WindowState = wsMaximized;
@@ -3653,6 +3732,7 @@ end;
 
 procedure TMainForm.SaveSessionAndSettings;
 begin
+  CaptureFindOptions;
   try
     UpdateWindowSettings;
     FSettings.Save;
@@ -3805,6 +3885,8 @@ begin
   if FTabs.Count = 0 then Exit;
   try
     SaveSession(FTabs, FPages.ActivePageIndex, FBackupConfig);
+    UpdateWindowSettings;
+    FSettings.Save;
   except
     // automatic session saves are best effort
   end;
@@ -3872,6 +3954,183 @@ begin
     Tr('Licensed under the Apache License 2.0.'),
     mtInformation, [mbOK]);
 end;
+procedure TMainForm.ShowPageSetup;
+var
+  Dlg: TPrintSetupForm;
+begin
+  Dlg := TPrintSetupForm.Create(Self, FSettings);
+  try
+    Dlg.Execute;
+  finally
+    Dlg.Free;
+  end;
+end;
+
+function TMainForm.CollectPrintText(APromptSelection: Boolean;
+  out ATitle: string; out AFirstLine, ALastLine: Integer): TStringList;
+var
+  Tab: TEditorTab;
+  Caret: TATCaretItem;
+  X1, Y1, X2, Y2: Integer;
+  HasSelection: Boolean;
+begin
+  Result := nil;
+  AFirstLine := 0;
+  ALastLine := 0;
+  ATitle := '';
+  Tab := ActiveTab;
+  if Tab = nil then Exit;
+  ATitle := Tab.BaseTitle;
+  if Trim(ATitle) = '' then ATitle := Tr('Untitled');
+
+  HasSelection := False;
+  if Tab.Editor.Carets.Count > 0 then
+  begin
+    Caret := Tab.Editor.Carets[0];
+    Caret.GetRange(X1, Y1, X2, Y2, HasSelection);
+    if HasSelection and (Trim(Tab.Editor.TextSelected) = '') then
+      HasSelection := False;
+  end;
+
+  Result := TStringList.Create;
+  if HasSelection and (FSettings.PrintSelectionOnly or
+     (APromptSelection and (TyMessageDlg(Tr('Print only the selected text?'),
+       mtConfirmation, [mbYes, mbNo]) = mrYes))) then
+  begin
+    Result.Text := Tab.Editor.TextSelected;
+    AFirstLine := Y1;
+    ALastLine := Y1 + Result.Count - 1;
+  end
+  else
+  begin
+    Result.Text := Tab.Editor.Text;
+    AFirstLine := 0;
+    ALastLine := Result.Count - 1;
+  end;
+  if Result.Count = 0 then Result.Add('');
+end;
+
+function TMainForm.BuildPrintLayout(APromptSelection: Boolean;
+  out ATitle: string): TPrintLayout;
+var
+  Lines: TStringList;
+  FirstLine, LastLine: Integer;
+  Options: TPrintOptions;
+begin
+  Result := nil;
+  Lines := CollectPrintText(APromptSelection, ATitle, FirstLine, LastLine);
+  if Lines = nil then Exit;
+  try
+    Options := PrintOptionsFromSettings(FSettings);
+    Result := MakePrintLayout(Lines, Options, FirstLine, LastLine);
+  finally
+    Lines.Free;
+  end;
+end;
+
+procedure TMainForm.PrintLayoutDocument(ALayout: TPrintLayout; const ATitle: string);
+var
+  Dlg: TPrintDialog;
+  I, PW, PH: Integer;
+  ScaleX, ScaleY: Double;
+begin
+  if ALayout = nil then Exit;
+  if (Printer = nil) or (not Printer.CanPrint) then
+  begin
+    TyMessageDlg(Tr('No printer is available.'), mtError, [mbOK]);
+    Exit;
+  end;
+  Dlg := TPrintDialog.Create(Self);
+  try
+    if not Dlg.Execute then Exit;
+    Printer.Title := ATitle;
+    Printer.BeginDoc;
+    try
+      GetPrintPageGeometry(PW, PH, ScaleX, ScaleY);
+      for I := 0 to ALayout.PageCount - 1 do
+      begin
+        if I > 0 then Printer.NewPage;
+        ALayout.DrawPage(Printer.Canvas, I, 0, 0, ScaleX, ScaleY,
+          I + 1, ALayout.PageCount, ATitle);
+      end;
+      Printer.EndDoc;
+    except
+      try
+        Printer.Abort;
+      except
+      end;
+      raise;
+    end;
+  finally
+    Dlg.Free;
+  end;
+end;
+
+procedure TMainForm.PrintDocument;
+var
+  Layout: TPrintLayout;
+  Title: string;
+begin
+  Layout := BuildPrintLayout(True, Title);
+  if Layout = nil then Exit;
+  try
+    PrintLayoutDocument(Layout, Title);
+  finally
+    Layout.Free;
+  end;
+end;
+
+procedure TMainForm.PrintFromPreview(Sender: TObject);
+var
+  P: TPrintPreviewForm;
+begin
+  if Sender is TPrintPreviewForm then
+  begin
+    P := TPrintPreviewForm(Sender);
+    PrintLayoutDocument(P.Layout, P.PreviewTitle);
+  end;
+end;
+
+procedure TMainForm.ShowPrintPreview;
+var
+  Lines: TStringList;
+  Title: string;
+  FirstLine, LastLine: Integer;
+  Dlg: TPrintPreviewForm;
+begin
+  Lines := CollectPrintText(True, Title, FirstLine, LastLine);
+  if Lines = nil then Exit;
+  try
+    Dlg := TPrintPreviewForm.Create(Self, Lines, FirstLine, LastLine,
+      FSettings, Title, @PrintFromPreview);
+    try
+      Dlg.ShowModal;
+    finally
+      Dlg.Free;
+    end;
+  finally
+    Lines.Free;
+  end;
+end;
+
+procedure TMainForm.ShowKeyboardShortcuts;
+var
+  Dlg: TShortcutsForm;
+  Extra: TMenuItem;
+begin
+  Extra := nil;
+  {$IFDEF LCLCocoa}
+  Extra := FSettingsMenu;
+  {$ENDIF}
+  Dlg := TShortcutsForm.Create(Self, FSettings, FShortcutManager, FMainMenu, Extra);
+  try
+    if Dlg.Execute then
+      FSettings.Save;
+  finally
+    Dlg.Free;
+  end;
+end;
+
 procedure TMainForm.ShowPreferences;
 var
   OldLang: string;
@@ -3893,6 +4152,13 @@ begin
         if FInstanceTimer <> nil then FInstanceTimer.Enabled := False;
       end;
       ApplyAppTheme;
+      if FSettings.AlwaysOnTop then
+        FormStyle := fsStayOnTop
+      else if FormStyle = fsStayOnTop then
+        FormStyle := fsNormal;
+      SetNativeTopMost(Self, FSettings.AlwaysOnTop);
+      ApplyDialogStayOnTop;
+      FAlwaysOnTopItem.Checked := FSettings.AlwaysOnTop;
       FWrapItem.Checked := FSettings.WordWrap;
       FWhitespaceItem.Checked := FSettings.ShowWhitespace;
       FNumbersItem.Checked := FSettings.ShowNumbers;
@@ -3902,8 +4168,6 @@ begin
       FRulerItem.Checked := FSettings.ShowRuler;
       FBookmarkMarginItem.Checked := FSettings.ShowBookmarkMargin;
       FSessionTimer.Interval := FSettings.AutoSnapshotSec * 1000;
-      FFindForm.ApplyDefaults(FSettings.FindCase, FSettings.FindWords, FSettings.FindRegex, FSettings.FindWrap);
-      FFindFilesForm.ApplyDefaults(FSettings.FindCase, FSettings.FindWords, FSettings.FindRegex);
       RebuildRecentMenu;
       if not SameText(OldLang, FSettings.Language) then
         TyMessageDlg(Tr('The language will change after restarting TyEditor.'),

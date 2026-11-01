@@ -59,6 +59,9 @@
       <Item>
         <PackageName Value="pascalscript"/>
       </Item>
+      <Item>
+        <PackageName Value="Printer4Lazarus"/>
+      </Item>
     </RequiredPackages>
     <Units>
       <Unit>
@@ -78,6 +81,16 @@
         <IsPartOfProject Value="True"/>
         <UsageCount Value="20"/>
         <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/core/ukeybindings.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/core/uprint.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="src/core/uencoding.pas"/>
@@ -144,6 +157,21 @@
         <IsPartOfProject Value="True"/>
         <UsageCount Value="20"/>
         <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/ushortcutsdlg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/uprintsetupdlg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/uprintpreview.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="src/core/ucolorscheme.pas"/>

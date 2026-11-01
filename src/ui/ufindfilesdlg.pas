@@ -53,6 +53,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure ApplyDefaults(ACase, AWords, ARegex: Boolean);
+    procedure GetOptions(out ACase, AWords, ARegex: Boolean);
     procedure ShowDialog(const ADir, AFindText, AReplaceText: string;
       AReplace: Boolean);
     property OnResult: TFindFileResultEvent read FOnResult write FOnResult;
@@ -210,6 +211,13 @@ begin
   FCase.Checked := ACase;
   FWords.Checked := AWords;
   FRegex.Checked := ARegex;
+end;
+
+procedure TFindInFilesForm.GetOptions(out ACase, AWords, ARegex: Boolean);
+begin
+  ACase := FCase.Checked;
+  AWords := FWords.Checked;
+  ARegex := FRegex.Checked;
 end;
 
 procedure TFindInFilesForm.ShowDialog(const ADir, AFindText, AReplaceText: string;

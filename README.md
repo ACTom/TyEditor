@@ -43,6 +43,10 @@ intelligence.
 - **Readable for long sessions** — seven editor color schemes with light/dark
   palettes, TyControls interface themes, minimap/micromap, line numbers, ruler,
   whitespace display and a read-only document map (`F8`).
+- **Printing and customization** — print preview, optional selection printing,
+  page margins, header/footer and line numbers. A redesigned Preferences dialog
+  and a Keyboard Shortcuts editor make the editor configurable without editing
+  JSON.
 - **Desktop integration** — single-instance command-line opening, drag and drop,
   Linux desktop entry, Windows installer with optional `.txt` association, and
   a macOS app bundle.
@@ -52,7 +56,7 @@ intelligence.
 ### Build from source
 
 You need Lazarus with FPC, TyControls, ATSynEdit, ATSynEdit_Ex, EControl,
-EncConv and the PascalScript component package. On Linux, install the Qt6
+EncConv, Printer4Lazarus and the PascalScript component package. On Linux, install the Qt6
 development libraries as well.
 
 ```bash

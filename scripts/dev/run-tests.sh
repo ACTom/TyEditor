@@ -15,14 +15,16 @@ run_test() {
   "$ROOT/tests/$name" "$@"
 }
 
-for test in testencoding testfindasync testplugins testsyntax testtools; do
+for test in testencoding testfindasync testkeys testplugins testprint testsyntax testtools; do
   build_test "$test"
 done
 build_test testfindfiles
 
 run_test testencoding
 run_test testfindasync
+run_test testkeys
 run_test testplugins
+run_test testprint
 run_test testsyntax
 run_test testtools
 run_test testfindfiles "$ROOT" '*.pas' TyEditor

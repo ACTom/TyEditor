@@ -19,6 +19,7 @@ function AppConfigDir: string;
 function SessionFileName: string;
 function SettingsFileName: string;
 function MakeBackupConfig(const ADir: string; AKeep: Integer): TBackupConfig;
+function DefaultBackupDir: string;
 function BackupDirFor(const AConfig: TBackupConfig): string;
 function RunningMarkerFileName: string;
 function MacrosDir: string;
@@ -92,12 +93,17 @@ begin
   Result.Keep := AKeep;
 end;
 
+function DefaultBackupDir: string;
+begin
+  Result := AppConfigDir + 'backups' + PathDelim;
+end;
+
 function BackupDirFor(const AConfig: TBackupConfig): string;
 begin
   if AConfig.Dir <> '' then
     Result := IncludeTrailingPathDelimiter(AConfig.Dir)
   else
-    Result := AppConfigDir + 'backups' + PathDelim;
+    Result := DefaultBackupDir;
 end;
 
 function RunningMarkerFileName: string;

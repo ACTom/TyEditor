@@ -12,6 +12,8 @@
 /tests/testencoding
 /tests/testfindasync
 /tests/testfindfiles
+/tests/testkeys
+/tests/testprint
 /tests/testsyntax
 /tests/testplugins
 /tests/*.exe
