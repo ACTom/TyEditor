@@ -16,6 +16,7 @@ script flow and release checks for maintainers.
 | `scripts/build/macos.sh` | macOS x86_64 and aarch64 app bundles |
 | `scripts/package/install-desktop.sh` | Install Linux binary and desktop entry |
 | `scripts/package/installer.sh` | Build Windows installer through Wine |
+| `scripts/package/release.sh` | Archive all release packages and write `dist/SHA256SUMS` |
 | `scripts/dev/version.py` | Read/write version from `TyEditor.lpi` |
 | `scripts/dev/run-tests.sh` | Build and run automated tests |
 | `scripts/dev/check-translations.py` | Translation coverage check |
@@ -89,7 +90,8 @@ outputs.
    - run a bundled process plugin and the PascalScript fixture;
    - verify translations and dark mode.
 7. Sign/notarize both macOS app bundles separately if distributing them publicly.
-8. Archive release packages from `dist/`, including `dist/plugins/*.typlugin`.
+8. Run `./scripts/package/release.sh` to archive all release packages and
+   refresh `dist/SHA256SUMS`; publish `dist/plugins/*.typlugin` as well.
 9. Verify the generated installer filename uses the `.lpi` version.
 
 ## Packaging assets
