@@ -87,7 +87,6 @@ API mismatches or duplicate-unit warnings.
 ### macOS
 
 - Cocoa widgetset and an FPC macOS cross toolchain for cross builds.
-- `llvm-lipo` or `lipo` for the universal binary.
 - Output is unsigned and not notarized unless you sign it yourself.
 
 ### Linux aarch64

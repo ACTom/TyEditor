@@ -48,7 +48,7 @@ building or packaging:
 
 - Free Pascal Compiler (FPC)
 - Lazarus / lazbuild
-- LLVM tools (`llvm-rc`, `llvm-strip`, `llvm-objcopy`, `llvm-lipo`)
+- LLVM tools (`llvm-rc`, `llvm-strip`, `llvm-objcopy`)
 - Inno Setup (Windows installer)
 - Wine (optional, for building the Windows installer on Linux)
 

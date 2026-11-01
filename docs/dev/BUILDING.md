@@ -13,7 +13,7 @@ script flow and release checks for maintainers.
 | `scripts/build/linux-aarch64.sh` | Linux aarch64 cross build |
 | `scripts/build/win32.sh` | Windows i386 build |
 | `scripts/build/win64.sh` | Windows x86_64 build |
-| `scripts/build/macos.sh` | macOS x86_64 and universal app |
+| `scripts/build/macos.sh` | macOS x86_64 and aarch64 app bundles |
 | `scripts/package/install-desktop.sh` | Install Linux binary and desktop entry |
 | `scripts/package/installer.sh` | Build Windows installer through Wine |
 | `scripts/dev/version.py` | Read/write version from `TyEditor.lpi` |
@@ -56,7 +56,7 @@ Cross builds require:
 
 - `CROSS_BIN`, `SYSROOT`, `QT6PAS_LIB` for Linux aarch64;
 - a Windows-target FPC and `RESCOMP` for Windows;
-- Cocoa/FPC units, SDK and linker paths, plus `llvm-lipo`, for macOS.
+- Cocoa/FPC units, SDK and linker paths for macOS.
 
 Set these in `scripts/env.local.sh`. See
 [Building and installing](../user/installing.md) for the variable table and
@@ -88,7 +88,7 @@ outputs.
    - install a `.typlugin`, run it, disable it, then uninstall it;
    - run a bundled process plugin and the PascalScript fixture;
    - verify translations and dark mode.
-7. Sign/notarize macOS output separately if distributing it publicly.
+7. Sign/notarize both macOS app bundles separately if distributing them publicly.
 8. Archive release packages from `dist/`, including `dist/plugins/*.typlugin`.
 9. Verify the generated installer filename uses the `.lpi` version.
 

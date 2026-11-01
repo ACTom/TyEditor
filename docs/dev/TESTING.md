@@ -207,9 +207,9 @@ Lazarus.
    icon, resources and opening a file from Explorer/command line.
 2. Build the Windows installer with `ISCC`; install, verify the optional `.txt`
    association and that uninstalling keeps `%APPDATA%\TyEditor`.
-3. Build `macos`; open the `.app`, verify `data/`, `languages/` and icons are
-   inside `Contents/Resources/`; unsigned first launch may require Finder’s
-   **Open**.
+3. Build `macos` (or `macos-x86_64` / `macos-aarch64`); open each `.app` on
+   its matching architecture, verify `data/`, `languages/` and icons are inside
+   `Contents/Resources/`; unsigned first launch may require Finder’s **Open**.
 4. Build `linux-aarch64`; check `libQt6Pas.so*` is present and the binary starts
    with `$ORIGIN` RUNPATH on an aarch64 system.
 5. Install the Linux desktop entry with `scripts/package/install-desktop.sh` and

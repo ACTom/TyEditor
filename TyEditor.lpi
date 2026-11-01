@@ -21,12 +21,12 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="0"/>
-      <MinorVersionNr Value="1"/>
+      <MinorVersionNr Value="2"/>
       <RevisionNr Value="0"/>
       <BuildNr Value="0"/>
       <Language Value="0409"/>
       <CharSet Value="04B0"/>
-      <StringTable ProductName="TyEditor" ProductVersion="0.1.0" FileDescription="TyEditor" LegalCopyright="Copyright (c) TyEditor contributors"/>
+      <StringTable ProductName="TyEditor" ProductVersion="0.2.0" FileDescription="TyEditor" LegalCopyright="Copyright (c) TyEditor contributors"/>
     </VersionInfo>
     <BuildModes Active="Default">
       <Item Name="Default" Default="True"/>

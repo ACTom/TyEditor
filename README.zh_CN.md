@@ -40,7 +40,8 @@ cp scripts/env.example.sh scripts/env.local.sh
 
 默认目标为 Linux x86_64 / Qt6，产物位于
 `dist/linux-x86_64/TyEditor`。其他目标：`linux-aarch64`、`win32`、`win64`、
-`macos` 和 `all`。
+`macos`（Intel x86_64 与 Apple Silicon arm64 两个版本）、`macos-x86_64`、
+`macos-aarch64` 和 `all`。
 
 完整依赖、交叉编译和打包命令见[构建与安装](docs/user/installing.md)。
 

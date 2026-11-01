@@ -69,7 +69,8 @@ cp scripts/env.example.sh scripts/env.local.sh
 
 The default target is Linux x86_64 with Qt6, and the binary is written to
 `dist/linux-x86_64/TyEditor`. Other targets include `linux-aarch64`, `win32`,
-`win64`, `macos` and `all`.
+`win64`, `macos` (Intel x86_64 and Apple Silicon arm64), `macos-x86_64`,
+`macos-aarch64` and `all`.
 
 See [Building and installing](docs/user/installing.md) for the full setup,
 cross-compilation notes and packaging commands.

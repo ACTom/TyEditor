@@ -45,7 +45,6 @@ Other useful variables:
 | `STRIP` | Strip tool (`llvm-strip`, `strip`, …) |
 | `RESCOMP` | Windows resource compiler (`llvm-rc` or `windres`) |
 | `OBJCOPY` | Windows section remover (`llvm-objcopy` or `objcopy`) |
-| `MAC_UNIVERSAL` | Set to `0` to skip the macOS universal build |
 | `CROSS_BIN` | aarch64 binutils directory |
 | `SYSROOT` | aarch64 glibc/Qt6 sysroot |
 | `QT6PAS_LIB` | directory containing the aarch64 `libQt6Pas.so` |
@@ -60,7 +59,9 @@ Alternatively, point `TYEDITOR_ENV` at another environment file.
 ./scripts/build.sh linux-aarch64   # Linux aarch64, Qt6
 ./scripts/build.sh win32           # Windows i386, native Win32 widgetset
 ./scripts/build.sh win64           # Windows x86_64, native Win32 widgetset
-./scripts/build.sh macos           # macOS x86_64 and universal
+./scripts/build.sh macos           # macOS x86_64 + Apple Silicon (arm64)
+./scripts/build.sh macos-x86_64    # macOS Intel only
+./scripts/build.sh macos-aarch64   # macOS Apple Silicon only
 ./scripts/build.sh all             # Linux x86_64 + Windows i386/x86_64
 ```
 
@@ -72,7 +73,9 @@ Outputs:
 | `linux-aarch64` | `dist/linux-aarch64/TyEditor` (with `libQt6Pas.so*`) |
 | `win32` | `dist/win32-i386/TyEditor.exe` |
 | `win64` | `dist/win64-x86_64/TyEditor.exe` |
-| `macos` | `dist/macos-x86_64/TyEditor.app`, `dist/macos-universal/TyEditor.app` |
+| `macos` | `dist/macos-x86_64/TyEditor.app`, `dist/macos-aarch64/TyEditor.app` |
+| `macos-x86_64` | `dist/macos-x86_64/TyEditor.app` |
+| `macos-aarch64` | `dist/macos-aarch64/TyEditor.app` |
 
 Each target copies `data/`, `languages/`, `LICENSE`, `NOTICE` and
 `THIRD_PARTY_NOTICES.md` next to the executable (or into the macOS app bundle),
@@ -125,15 +128,17 @@ the PE file explicitly.
 ### macOS
 
 ```bash
-./scripts/build.sh macos
+./scripts/build.sh macos           # both architectures
+./scripts/build.sh macos-x86_64    # Intel only
+./scripts/build.sh macos-aarch64   # Apple Silicon only
 ```
 
-This cross-compiles x86_64 and aarch64 and combines them with `llvm-lipo` when
-available. The app bundle includes `data/` and `languages/` under
-`Contents/Resources/`. The output is not signed or notarized; sign it with your
-own Apple credentials before distribution.
-
-Set `MAC_UNIVERSAL=0` to build only `dist/macos-x86_64/TyEditor.app`.
+This cross-compiles two independent app bundles instead of a universal binary:
+`dist/macos-x86_64/TyEditor.app` for Intel and
+`dist/macos-aarch64/TyEditor.app` for Apple Silicon. Each bundle includes
+`data/` and `languages/` under `Contents/Resources/`. The output is not signed
+or notarized; sign each bundle with your own Apple credentials before
+distribution.
 
 ### Linux aarch64
 

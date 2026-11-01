@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../lib" && pwd)/common.sh"
-LIPO="${LIPO:-$(command -v llvm-lipo || command -v lipo || true)}"
+
+ARCH="${1:-all}"
 X86_APP="$ROOT/dist/macos-x86_64/TyEditor.app"
-UNI_APP="$ROOT/dist/macos-universal/TyEditor.app"
-X86_BIN="$ROOT/dist/.TyEditor-x86_64"
-ARM_BIN="$ROOT/dist/.TyEditor-aarch64"
+ARM_APP="$ROOT/dist/macos-aarch64/TyEditor.app"
 mkdir -p "$ROOT/dist"
 
 update_plist_version() {
@@ -42,35 +41,35 @@ package_app() {
   printf 'APPL????' > "$app/Contents/PkgInfo"
 }
 
-echo "Building macOS x86_64..."
-"$LAZBUILD" "${LAZBUILD_OPTS[@]}" --os=darwin --cpu=x86_64 --ws=cocoa "${UNIT_OPTS[@]}" "$ROOT/TyEditor.lpi"
-cp "$ROOT/TyEditor" "$X86_BIN"
-strip_binary "$X86_BIN"
-package_app "$X86_BIN" "$X86_APP"
-rm -rf "$ROOT/TyEditor.app"
-rm -f "$ROOT/TyEditor" "$ROOT/TyEditor.res"
-echo "macOS x86_64: $X86_APP"
+build_arch() {
+  local cpu="$1"
+  local app="$2"
+  local bin="$ROOT/dist/.TyEditor-$cpu"
 
-if [ "${MAC_UNIVERSAL:-1}" = "0" ]; then
-  rm -f "$X86_BIN"
-  exit 0
-fi
+  echo "Building macOS $cpu..."
+  "$LAZBUILD" "${LAZBUILD_OPTS[@]}" --os=darwin --cpu="$cpu" --ws=cocoa \
+    "${UNIT_OPTS[@]}" "$ROOT/TyEditor.lpi"
+  cp "$ROOT/TyEditor" "$bin"
+  strip_binary "$bin"
+  package_app "$bin" "$app"
+  rm -rf "$ROOT/TyEditor.app"
+  rm -f "$ROOT/TyEditor" "$ROOT/TyEditor.res" "$bin"
+  echo "macOS $cpu: $app"
+}
 
-echo "Building macOS aarch64..."
-"$LAZBUILD" "${LAZBUILD_OPTS[@]}" --os=darwin --cpu=aarch64 --ws=cocoa "${UNIT_OPTS[@]}" "$ROOT/TyEditor.lpi"
-cp "$ROOT/TyEditor" "$ARM_BIN"
-strip_binary "$ARM_BIN"
-rm -rf "$ROOT/TyEditor.app"
-rm -f "$ROOT/TyEditor" "$ROOT/TyEditor.res"
-
-if [ -n "$LIPO" ]; then
-  mkdir -p "$(dirname "$UNI_APP")"
-  rm -rf "$UNI_APP"
-  cp -a "$X86_APP" "$UNI_APP"
-  "$LIPO" -create "$X86_BIN" "$ARM_BIN" -output "$UNI_APP/Contents/MacOS/TyEditor"
-  chmod +x "$UNI_APP/Contents/MacOS/TyEditor"
-  echo "macOS universal: $UNI_APP"
-else
-  echo "llvm-lipo/lipo not found; skipped universal binary" >&2
-fi
-rm -f "$X86_BIN" "$ARM_BIN"
+case "$ARCH" in
+  all)
+    build_arch x86_64 "$X86_APP"
+    build_arch aarch64 "$ARM_APP"
+    ;;
+  x86_64)
+    build_arch x86_64 "$X86_APP"
+    ;;
+  aarch64|arm64)
+    build_arch aarch64 "$ARM_APP"
+    ;;
+  *)
+    echo "usage: $0 [all|x86_64|aarch64]" >&2
+    exit 2
+    ;;
+esac
