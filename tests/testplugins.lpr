@@ -76,6 +76,14 @@ begin
     if not Check(Plugin.CommandTitle(Command) = '将选区编码为 Base64',
       'zh_CN command title not loaded') then Halt(5);
 
+    Host.SetLocale('zh_CN');
+    Host.Reload(Root, '');
+    Plugin := Host.FindPlugin('sample.base64');
+    if not Check((Plugin <> nil) and (Plugin.LocalizedName = 'Base64 工具'),
+      'locale lost after reload') then Halt(67);
+    Plugin.ActiveLocale := 'zh_CN';
+    Command := Plugin.FindCommand('encode');
+
     Request := NewRequest('sample.base64', 'encode', 'hello');
     try
       if not Host.Execute(Plugin, Command, Request, Response, ErrorText) then

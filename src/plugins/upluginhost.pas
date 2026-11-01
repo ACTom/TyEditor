@@ -13,6 +13,7 @@ type
   private
     FPlugins: TList;
     FErrors: TStringList;
+    FLocale: string;
     procedure Clear;
     procedure LoadDirectory(const ADirectory: string; ABundled: Boolean);
     function IndexOfPlugin(const AId: string): Integer;
@@ -36,6 +37,7 @@ begin
   inherited Create;
   FPlugins := TList.Create;
   FErrors := TStringList.Create;
+  FLocale := '';
 end;
 
 destructor TPluginHost.Destroy;
@@ -113,12 +115,15 @@ begin
   LoadDirectory(ABundledDir, True);
   if (AUserDir <> '') and (not SameFileName(ABundledDir, AUserDir)) then
     LoadDirectory(AUserDir, False);
+  if FLocale <> '' then
+    SetLocale(FLocale);
 end;
 
 procedure TPluginHost.SetLocale(const ALocale: string);
 var
   i: Integer;
 begin
+  FLocale := ALocale;
   for i := 0 to FPlugins.Count - 1 do
     TPluginInfo(FPlugins[i]).ActiveLocale := ALocale;
 end;
