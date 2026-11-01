@@ -26,8 +26,8 @@ The repository ships these sample plugins in `data/plugins/`:
 | External Formatter | Run `clang-format` on a selection or document |
 
 All five samples currently run `python3` scripts and declare Linux support
-only (`linux-x86_64` and `linux-aarch64`). The first four need Python 3 on
-`PATH`; External Formatter additionally needs `clang-format`. On Windows and
+only (`linux-x86_64` and `linux-aarch64`). All five need Python 3 on `PATH`;
+External Formatter additionally needs `clang-format`. On Windows and
 macOS the samples remain visible in the plugin manager but are disabled with a
 platform reason. They are examples, not required parts of the editor; remove
 them from a distribution if the dependencies are undesirable.
