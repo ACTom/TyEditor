@@ -288,9 +288,8 @@
   "Export Results...": "导出结果...",
   "Open &Tabs": "打开的标签(&T)",
   "Auto save session (seconds):": "自动保存会话（秒）：",
-  "A multi-tab text editor built with Lazarus, TyControls, ATSynEdit and EControl.": "基于 Lazarus、TyControls、ATSynEdit 和 EControl 的多标签文本编辑器。",
-  "Supports session restore, encoding/EOL conversion, find/replace, find in files, bookmarks, macros, column editing and syntax highlighting.": "支持会话恢复、编码/换行符转换、查找替换、在文件中查找、书签、宏、列编辑和语法高亮。",
-  "EControl lexer library:": "EControl 词法库：",
+  "A lightweight, multi-tab text editor for Linux, Windows and macOS.": "面向 Linux、Windows 和 macOS 的轻量级多标签文本编辑器。",
+  "Licensed under the Apache License 2.0.": "基于 Apache License 2.0 授权。",
   "Cannot export results: %s": "无法导出结果：%s",
   "&Plugins": "插件(&P)",
   "No plugin errors.": "没有插件错误。",
@@ -377,6 +376,5 @@
   "Empty uses the file folder": "留空则使用文件所在目录",
   "Cancelling...": "正在取消...",
   "Running %s...": "正在运行 %s...",
-  "Running Plugin": "正在运行插件",
-  "Uses RemObjects Pascal Script by Carlo Kok and RemObjects Software:": "使用 Carlo Kok 与 RemObjects Software 的 RemObjects Pascal Script："
+  "Running Plugin": "正在运行插件"
 }

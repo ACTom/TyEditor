@@ -3866,13 +3866,10 @@ end;
 procedure TMainForm.ShowAbout;
 begin
   TyMessageDlg('TyEditor ' + TyEditorVersion + LineEnding + LineEnding +
-    Tr('A multi-tab text editor built with Lazarus, TyControls, ATSynEdit and EControl.') +
+    Tr('A lightweight, multi-tab text editor for Linux, Windows and macOS.') +
     LineEnding + LineEnding +
-    Tr('Supports session restore, encoding/EOL conversion, find/replace, find in files, bookmarks, macros, column editing and syntax highlighting.') +
-    LineEnding + LineEnding +
-    Tr('EControl lexer library:') + ' ' + FLanguage.LibFile + LineEnding +
-    Tr('Uses RemObjects Pascal Script by Carlo Kok and RemObjects Software:') +
-    ' https://www.remobjects.com/ps.aspx',
+    'Copyright (c) 2026 TyEditor contributors' + LineEnding +
+    Tr('Licensed under the Apache License 2.0.'),
     mtInformation, [mbOK]);
 end;
 procedure TMainForm.ShowPreferences;
