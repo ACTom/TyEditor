@@ -130,8 +130,9 @@ says otherwise.
 ### 8. Plugins
 
 Prerequisite: `python3` is available for the bundled process samples. The
-PascalScript package must be installed in Lazarus; the fixture uses no external
-interpreter.
+bundled samples declare Linux only, so on Windows and macOS they appear as
+disabled with a platform reason. The PascalScript package must be installed in
+Lazarus; the fixture uses no external interpreter.
 
 1. Open **Plugins**: Base64 Tools, Text Tools, Caesar Cipher, JSON Formatter
    and External Formatter are listed. Missing optional dependencies are reported

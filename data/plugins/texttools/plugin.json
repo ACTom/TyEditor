@@ -16,7 +16,8 @@
   "timeout_ms": 5000,
   "compatibility": {
     "platforms": [
-      "any"
+      "linux-x86_64",
+      "linux-aarch64"
     ]
   },
   "permissions": [

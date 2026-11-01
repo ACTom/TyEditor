@@ -117,8 +117,10 @@ Bundled samples live in `data/plugins/`:
 - **JSON Formatter** — format or minify JSON with indent/sort options.
 - **External Formatter** — run `clang-format` on a selection or document.
 
-The process samples use Python 3; External Formatter also needs `clang-format`.
-The PascalScript runtime is embedded and needs no external interpreter.
+All five samples are Python 3 process plugins and currently declare Linux
+support only, so Windows and macOS show them as disabled with a platform reason.
+External Formatter also needs `clang-format`. The PascalScript runtime is
+embedded and needs no external interpreter.
 
 Use **Plugins > Manage Plugins...** to install a package, enable or disable it,
 reload, open the user plugin directory or uninstall it. The manager keeps state

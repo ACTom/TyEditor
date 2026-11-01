@@ -73,7 +73,7 @@ validated and extracted.
   "timeout_ms": 5000,
   "compatibility": {
     "editor": ">=0.1.0 <2.0.0",
-    "platforms": ["any"]
+    "platforms": ["linux-x86_64", "linux-aarch64"]
   },
   "runtime": {
     "type": "process",
@@ -86,6 +86,10 @@ validated and extracted.
   "options": []
 }
 ```
+
+The example declares Linux only because its command is `python3`; a process
+plugin should list only the platforms where its executable is known to exist.
+Use `["any"]` only when that is genuinely true.
 
 Required fields: `schema`, `api`, `id`, `name`, `version`, `runtime` and at least
 one valid `commands` entry. `schema` and `api` must both be `1` in this release.

@@ -25,10 +25,12 @@ The repository ships these sample plugins in `data/plugins/`:
 | JSON Formatter | Format or minify a JSON document, with indent/sort options |
 | External Formatter | Run `clang-format` on a selection or document |
 
-The first four use Python 3, so Python must be on `PATH` for those samples to
-run. External Formatter additionally requires `clang-format`. They are examples,
-not required parts of the editor; remove them from a distribution if the
-dependencies are undesirable.
+All five samples currently run `python3` scripts and declare Linux support
+only (`linux-x86_64` and `linux-aarch64`). The first four need Python 3 on
+`PATH`; External Formatter additionally needs `clang-format`. On Windows and
+macOS the samples remain visible in the plugin manager but are disabled with a
+platform reason. They are examples, not required parts of the editor; remove
+them from a distribution if the dependencies are undesirable.
 
 Bundled plugins can be disabled but not uninstalled.
 

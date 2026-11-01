@@ -86,7 +86,7 @@ TyEditor v1 插件是可直接安装的 `.typlugin` 包：ZIP 根目录包含 `p
 - **JSON Formatter**：格式化/压缩 JSON，支持缩进和键排序选项。
 - **External Formatter**：对选区或文档运行 `clang-format`。
 
-进程示例使用 Python 3；External Formatter 还需要 `clang-format`。PascalScript 运行时内嵌，无需外部解释器。
+五个示例都是 Python 3 进程插件，目前仅声明支持 Linux，因此在 Windows 和 macOS 上会显示为“平台不兼容”并被禁用。External Formatter 还需要 `clang-format`。PascalScript 运行时内嵌，无需外部解释器。
 
 使用 **插件 > 管理插件...** 安装插件包、启用/禁用、重载、打开用户插件目录或卸载。管理状态保存在 `plugins.json`；不兼容插件仍会显示，但会被禁用并给出原因。插件在后台运行，支持超时和取消。每个插件包拥有独立翻译，按精确区域、基础语言、默认区域和英语依次回退。
 
