@@ -1,0 +1,6 @@
+{
+  "plugin.name": "Pascal 脚本测试",
+  "plugin.description": "嵌入式 PascalScript 运行时测试插件。",
+  "command.append.title": "附加选项",
+  "option.suffix.label": "后缀"
+}

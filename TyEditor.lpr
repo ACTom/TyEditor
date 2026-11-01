@@ -9,7 +9,7 @@ uses
 
 {$R *.res}
 {$IFDEF WINDOWS}
-  {$R 'tyeditor_icon.res'}
+  {$R 'build/tyeditor_icon.res'}
 {$ENDIF}
 
 begin

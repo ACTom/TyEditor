@@ -1,0 +1,7 @@
+{
+  "plugin.name": "Base64 Tools",
+  "plugin.description": "Encode or decode the current selection as Base64.",
+  "command.encode.title": "Encode Selection as Base64",
+  "command.decode.title": "Decode Selection from Base64",
+  "error.decode": "The selection is not valid Base64 text."
+}

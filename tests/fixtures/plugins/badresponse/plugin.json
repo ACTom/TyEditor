@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "api": 1,
+  "id": "test.badresponse",
+  "name": "Bad Response Plugin",
+  "version": "1.0.0",
+  "description": "Malformed response fixture.",
+  "default_locale": "en",
+  "runtime": {"type": "process", "command": ["python3", "${pluginDir}/plugin.py"]},
+  "timeout_ms": 1000,
+  "compatibility": {"platforms": ["any"]},
+  "commands": [{"id": "run", "title": "Run Bad Response Plugin", "scope": "selection"}]
+}

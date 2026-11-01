@@ -1,235 +1,163 @@
+<p align="center"><img src="assets/branding/tyeditor.svg" width="96" height="96" alt="TyEditor"></p>
+
 # TyEditor
 
-TyEditor 是一个使用 **Lazarus + TyControls + ATSynEdit** 构建的多标签文本编辑器。主窗口是 `TTyForm`，菜单栏放在 `TTyTitleBar` 中，编辑器核心是 `TATSynEdit`，语法高亮使用 EControl + `lib.lxl`。
+**A focused, cross-platform text editor built with Lazarus/Free Pascal.**
 
-## 功能
+TyEditor is a native desktop text editor for Linux, Windows and macOS. It keeps
+the familiar habits of a classic editor: tabs, sessions, encodings, search,
+macros, bookmarks and syntax highlighting. It is deliberately **not an IDE** —
+there is no LSP, terminal, debugger, project workspace, Git integration or code
+intelligence.
 
-- 多标签编辑；每个标签保存独立的光标、选区、滚动位置、编码、换行符、语言、书签、折叠和只读状态；关闭最后一个标签即退出程序。
-- 打开无权限/不存在文件时提示错误，不留下空白标签；保存失败不会覆盖原文件，并显示错误。
-- 退出程序不弹保存提示：未保存内容写入备份，启动时自动恢复全部标签；每 30 秒自动快照。
-- 状态栏显示/转换字符编码：UTF-8、UTF-8 BOM、UTF-16 LE/BE、UTF-32 LE/BE、ANSI 系统代码页以及常用代码页（GBK、Big5、Shift-JIS、EUC-KR 等）。打开文件时自动识别 BOM、UTF-8、UTF-16 和常见多字节编码；低置信度或误判时可从状态栏手动重载。
-- 状态栏显示/转换换行符：CRLF、LF、CR、Mixed。
-- 文件：新建、打开、打开最近、保存、另存为、全部保存、重新载入、关闭、关闭其他、关闭全部；支持命令行打开和拖放打开（LCL 默认拖放）。
-- 编辑：撤销/重做、剪贴板、行复制/删除/移动、缩进、注释切换、大小写、排序、去重、去行尾空格、合并/拆分行、多光标、列选择、缩进参考线、括号跳转。
-- 查找/替换：普通/正则、区分大小写、全字匹配、循环、选区内、全部查找、计数。
-- 在文件中查找/替换：目录、通配符、子目录、包含/排除目录、编码感知读取/保存；异步扫描、进度、取消、结果导出为文本/JSON。
-- 书签、转到行。
-- 宏：命令级录制、播放、播放 N 次、保存/载入 JSON 宏。
-- 语法高亮：EControl 词法库，按扩展名自动识别，可手动切换或关闭。
-- 视图：自动换行、空白字符、行号、折叠、标尺、书签边栏、minimap/micromap、缩放、全屏、置顶、界面主题、深色模式。
-- 默认编辑区按 Notepad++ 习惯：只显示行号；标尺、书签边栏、变更状态边栏默认关闭；折叠边栏仅在启用语法高亮时显示。
-- 设置保存到 JSON；界面语言默认跟随系统（中文系统显示中文，其他系统回退英文），也可显式选择 `en` / `zh_CN`。
+[English](README.md) · [简体中文](README.zh_CN.md)
 
-## 依赖
+<p align="center"><img src="assets/screenshot.png" width="820" alt="TyEditor screenshot"></p>
 
-详见 [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md)。当前验证环境：
+## Highlights
 
-- Lazarus 5.99 / FPC 3.2.3
-- TyControls 3.1
-- ATSynEdit 2.28
-- ATSynEdit_Ex 2.2.2
-- EControl 2.3.1
-- EncConv 1.1
-- ATFlatControls 2.3.1
+- **Native and fast** — Lazarus/LCL with TyControls; Linux uses Qt6, Windows
+  uses the native Win32 widgetset, macOS uses Cocoa.
+- **Your work survives restarts** — restores tabs, carets, selections, scroll
+  positions, encoding/EOL, language, bookmarks and folding; unsaved buffers are
+  backed up and crash recovery is offered on the next launch.
+- **Encoding-aware** — UTF-8/16/32 with BOM detection, ANSI code pages, GBK,
+  Big5, Shift-JIS, EUC-KR and more; convert or reload from the status bar.
+- **Search that stays responsive** — find/replace with regex, case, whole-word
+  and selection modes; asynchronous find/replace in files with progress,
+  cancellation and export.
+- **A text editor’s editing model** — multi-caret and column editing, line
+  operations, comment toggle, bracket matching, macros and bookmarks.
+- **58 built-in syntax lexers** — 19 EControl lexers plus 39 TyEditor language
+  definitions, selected automatically by extension. Highlighting is lexical:
+  keywords, types, constants, strings, comments, numbers and operators.
+- **Installable plugins v1** — `.typlugin` packages with their own manifest,
+  commands, options and translations. Process and PascalScript runtimes share a
+  JSON request/response boundary; install, enable, reload and uninstall from the
+  plugin manager.
+- **External tools** — configure your own commands under **Tools > Manage
+  Tools...**. Tools receive the selection or document on standard input, write
+  to standard output, support placeholders such as `${file}` and `${line}`, and
+  run in the background with cancellation and timeout. They stay separate from
+  plugins.
+- **Readable for long sessions** — seven editor color schemes with light/dark
+  palettes, TyControls interface themes, minimap/micromap, line numbers, ruler,
+  whitespace display and a read-only document map (`F8`).
+- **Desktop integration** — single-instance command-line opening, drag and drop,
+  Linux desktop entry, Windows installer with optional `.txt` association, and
+  a macOS app bundle.
 
-## 构建
+## Quick start
+
+### Build from source
+
+You need Lazarus with FPC, TyControls, ATSynEdit, ATSynEdit_Ex, EControl,
+EncConv and the PascalScript component package. On Linux, install the Qt6
+development libraries as well.
 
 ```bash
+git clone https://github.com/ACTom/TyEditor.git
+cd TyEditor
+cp scripts/env.example.sh scripts/env.local.sh
+# Edit scripts/env.local.sh for your lazbuild, TyControls and CCR paths.
 ./scripts/build.sh
 ```
 
-构建脚本固定使用 **Qt6** widgetset，并在复制到 `dist` 前执行 `llvm-strip`（Windows 还会移除 `.stab`/`.stabstr`）：
+The default target is Linux x86_64 with Qt6, and the binary is written to
+`dist/linux-x86_64/TyEditor`. Other targets include `linux-aarch64`, `win32`,
+`win64`, `macos` and `all`.
 
-```bash
-/home/Tom/fpcupdeluxe/lazarus/lazbuild \
-  --pcp=/home/Tom/fpcupdeluxe/config_lazarus \
-  --ws=qt6 TyEditor.lpi
-```
+See [Building and installing](docs/user/installing.md) for the full setup,
+cross-compilation notes and packaging commands.
 
-需要系统安装 Qt6 开发库（`pkg-config --modversion Qt6Widgets` 应能输出版本）。
-
-运行：
+### Run
 
 ```bash
 dist/linux-x86_64/TyEditor
-dist/linux-x86_64/TyEditor /path/to/file1 /path/to/file2
+dist/linux-x86_64/TyEditor file1.txt file2.md
 ```
 
-安装到 `~/.local`（同时安装 `data/` 和 `languages/`，否则语法库与翻译不可用）：
+On first launch TyEditor creates its settings and session directory:
 
-```bash
-./scripts/linux/install-desktop.sh
-# 或 PREFIX=/usr/local ./scripts/linux/install-desktop.sh
-```
-
-Windows 32 位构建（面向 Win2003/Win32，原生 Win32 widgetset）：
-
-```bash
-./scripts/build-win32.sh
-```
-
-输出为 `dist/win32-i386/TyEditor.exe`。
-
-Windows 安装包（Wine + Inno Setup）：
-
-```bash
-./scripts/build-installer.sh
-```
-
-输出 `dist/TyEditorSetup-0.1.0.exe`。可通过 `ISCC=/path/to/ISCC.exe` 或 `WINE_PREFIX` 覆盖默认工具路径；卸载不会删除 `%APPDATA%\TyEditor`。Windows 构建使用原生 Win32 widgetset（Qt6 不提供官方 32 位 Windows 目标），目标为 Win2003 及之后的 32/64 位 Windows；exe 只静态导入经典系统 DLL，不依赖 Qt6 运行库。`data/` 与 `languages/` 已随 exe 复制到同一 `dist` 目录。
-
-## 会话与设置位置
-
-Linux 下为 `~/.config/TyEditor/`（从旧 TyEdit 升级时，首次启动会把旧配置复制到这里）：
-
-- `running.marker`：运行标记；正常关闭会删除，异常退出后下次启动提示恢复会话。
-- `session.json`：窗口、标签顺序、活动标签、每标签编辑状态。
-- `session.json.bak`：上一次会话。
-- `backups/<id>.txt`：未保存内容的 UTF-8 备份。
-- `settings.json`：字体、缩进、视图、语言、最近文件、窗口位置。
-- `macros/`：宏文件默认目录。
-
-程序退出时不会因为未保存内容阻塞；单个标签关闭时仍会询问保存/不保存/取消。
-
-## 常用快捷键
-
-| 快捷键 | 功能 |
+| Platform | Configuration directory |
 | --- | --- |
-| Ctrl+N / Ctrl+O / Ctrl+S | 新建 / 打开 / 保存 |
-| Ctrl+Shift+S | 全部保存 |
-| Ctrl+W | 关闭当前标签 |
-| Ctrl+F / Ctrl+H | 查找 / 替换 |
-| F3 / Shift+F3 | 查找下一个 / 上一个 |
-| Ctrl+Shift+F / Ctrl+Shift+H | 在文件中查找 / 替换 |
-| Ctrl+G | 转到行 |
-| F2 / Ctrl+F2 / Shift+Ctrl+F2 | 切换 / 下一个 / 上一个书签 |
-| Ctrl+D / Ctrl+Shift+L | 复制行 / 删除行 |
-| Ctrl+Shift+Up/Down | 上移 / 下移当前行 |
-| Ctrl+Q | 切换行注释 |
-| Ctrl+U / Ctrl+L | 转大写 / 转小写 |
-| Ctrl+J | 合并行 |
-| Ctrl+滚轮 | 缩放 |
-| F11 | 全屏 |
+| Linux | `~/.config/TyEditor/` |
+| Windows | `%APPDATA%\TyEditor\` |
+| macOS | `~/Library/Application Support/TyEditor/` |
 
-## 界面语言
+## Documentation
 
-### 文本编辑器默认行为
+| Guide | What it covers |
+| --- | --- |
+| [Installing and building](docs/user/installing.md) | Dependencies, build targets, packaging and desktop installation |
+| [Using TyEditor](docs/user/features.md) | Sessions, encodings, search, editing, views and settings |
+| [Languages and syntax](docs/user/languages.md) | All built-in lexers, extensions and limitations |
+| [Plugins](docs/user/plugins.md) | Installing, using and writing plugins |
+| [External tools](docs/user/tools.md) | Configuring commands that operate on the current document |
+| [Keyboard shortcuts](docs/user/shortcuts.md) | Menu shortcuts and common editing keys |
+| [Architecture](docs/dev/ARCHITECTURE.md) | Source layout and extension points |
+| [Build and release workflow](docs/dev/BUILDING.md) | Script flow, cross builds and release checks |
+| [Plugin protocol](docs/dev/PLUGIN_PROTOCOL.md) | Package format, manifest, runtimes and JSON protocol |
+| [Testing](docs/dev/TESTING.md) | Automated tests and manual acceptance checklist |
+| [Roadmap](docs/dev/ROADMAP.md) | Current scope and planned work |
 
-ATSynEdit 的默认值偏向代码编辑器，TyEditor 在创建每个编辑器时改为文本编辑器语义：
+## Plugins
 
-- 光标不能越过行末；在短行右侧、空白区域点击时光标落在该行最后一个字符之后，不会产生虚拟空格，方向键也不会越过行末。
-- 关闭自动缩进和自动闭合括号。
-- 关闭“无选区时复制/剪切整行”。
-- 关闭双击 URL 打开和字体连字。
-- 默认只有一个光标；多光标仍可通过 `Ctrl+Alt+Up/Down` 显式添加。
-- 保存时默认不删除行尾空格，也不强制末尾换行。
+TyEditor v1 plugins are installable `.typlugin` packages: ZIP archives with a
+root `plugin.json`, optional `locales/` translations and the plugin's scripts or
+executables. Packages declare their own ID, version, editor/platform
+compatibility, runtime, permissions, commands and options. User plugins override
+bundled plugins with the same ID.
 
-这些行为仍可在 `settings.json` 中通过 `auto_indent`、`auto_pair`、`trim_trailing_spaces`、`force_final_eol` 调整；虚拟光标不提供开关，保持文本编辑器语义。
+Bundled samples live in `data/plugins/`:
 
-默认 `"language": "auto"`：中文系统自动显示中文，其他系统回退英文。也可以显式设置：
+- **Base64 Tools** — encode or decode the current selection.
+- **Text Tools** — uppercase, lowercase, title case, or trim trailing spaces.
+- **Caesar Cipher** — demo encryption/decryption (shift 3, not secure).
+- **JSON Formatter** — format or minify JSON with indent/sort options.
+- **External Formatter** — run `clang-format` on a selection or document.
 
-```json
-"language": "en"
-```
+The process samples use Python 3; External Formatter also needs `clang-format`.
+The PascalScript runtime is embedded and needs no external interpreter.
 
-或
+Use **Plugins > Manage Plugins...** to install a package, enable or disable it,
+reload, open the user plugin directory or uninstall it. The manager keeps state
+in `plugins.json`; incompatible packages remain visible but disabled with a
+reason. Plugin execution runs in the background with timeout and cancellation.
+Each package owns its translations, resolved through exact locale, base
+language, default locale and English.
 
-```json
-"language": "zh_CN"
-```
+Read [docs/user/plugins.md](docs/user/plugins.md) to install and use plugins, or
+[docs/dev/PLUGIN_PROTOCOL.md](docs/dev/PLUGIN_PROTOCOL.md) to build one.
 
-`Settings > Preferences...` 会扫描 `languages/tyeditor.*.json`，把已安装语言列成下拉列表（`auto`、`English`、`简体中文` 以及新增的翻译文件），无需手动输入语言代码。中文菜单/对话框翻译位于 `languages/tyeditor.zh_CN.json`；TyControls 自带中文翻译位于 `languages/tycontrols.zh_CN.po`。
+## External tools
 
-## 路线图
+External tools are plain commands you configure yourself; they are not plugins
+and are not installed from `.typlugin` packages. Open **Tools > Manage Tools...**
+to add a command, choose what it receives on standard input (nothing, the
+selection or the whole document), choose where its output goes, and set a
+timeout. Arguments are one per line and never go through a shell. Placeholders
+such as `${file}`, `${dir}`, `${line}`, `${col}`, `${lexer}` and `${inputfile}`
+connect the command to the current document.
 
-阶段 1 已完成；阶段 2 的实施计划见 [docs/PHASE2_PLAN.md](docs/PHASE2_PLAN.md)，任务/验收记录见 [docs/PHASE2_TASKS.md](docs/PHASE2_TASKS.md)，总路线见 [docs/ROADMAP.md](docs/ROADMAP.md)。
+Enabled tools appear directly in the **Tools** menu. Execution runs in the
+background with a Cancel button; non-zero exit codes, timeouts and missing
+commands are reported with their standard error output. Definitions are stored
+in `tools.json` in the configuration directory.
 
-## 当前限制
+Read [docs/user/tools.md](docs/user/tools.md) for every option and examples.
 
-- “在文件中查找/替换”是同步实现，适合常规项目；超大目录建议先缩小目录或通配符。
-- 宏记录的是编辑器命令和文本插入，不记录鼠标点击、滚动和外部对话框。
-- 尚未实现打印、拆分视图、UDL 自定义语言、插件系统和文件关联。
-- 主题目前提供浅色/深色两套编辑器配色，未提供主题编辑器。
+## Scope
 
-## 设置
+TyEditor focuses on being a good text editor:
 
-`Settings > Preferences...`（快捷键 `Ctrl+Alt+P`）是一个单窗口、分类式设置对话框：
+- No language server, completion engine or diagnostics panel.
+- No integrated terminal, debugger or project task runner.
+- No project/workspace model or Git integration.
+- No editable split view; `F8` opens a read-only document map only.
 
-- **General**：界面语言（扫描 `languages/tyeditor.*.json`）、界面主题、深色模式、启动恢复会话、自动快照间隔。
-- **Editor**：字体下拉框 + TyControls 字体对话框、字号、Tab 宽度、空格缩进、自动换行、空白字符、行号、行号显示方式（每行 / 每 5 行 / 每 10 行 / 相对行号 / 仅标记点）、当前行高亮、折叠、标尺、书签边栏、minimap/micromap、自动缩进、自动闭合括号、平滑滚动、光标闪烁、编辑器配色方案。
+## License
 
-编辑区滚动条固定使用 ATSynEdit 主题化滚动条，不再提供系统原生滚动条选项。
-- **Files**：默认编码、默认换行符、保存时去行尾空格、保存时确保末尾换行、最近文件数量。
-- **Search**：默认区分大小写、全字匹配、正则、循环查找。
-
-设置写入 `~/.config/TyEditor/settings.json`（Windows 为 `%APPDATA%\TyEditor`）。
-
-## macOS 构建
-
-```bash
-./scripts/build-macos.sh
-```
-
-输出：
-
-- `dist/macos-x86_64/TyEditor.app`
-- `dist/macos-universal/TyEditor.app`（x86_64 + aarch64，使用 `llvm-lipo` 合并）
-
-macOS 版本使用 Cocoa widgetset，从 Linux 交叉编译；Info.plist、`.icns` 图标、`data/`、`languages/` 已打包进 app bundle 的 `Contents/Resources/`。产物未做 Apple 签名/公证，首次打开可能需要右键“打开”，或自行执行 `codesign`。
-
-## 编辑器配色方案
-
-编辑器语法配色与 TyControls 界面主题分离，每个配色方案都提供 **浅色 / 深色两套 palette**，由当前 `View > Dark Theme` 自动选择。
-
-内置方案：
-
-| 方案 | 浅色 | 深色 |
-| --- | --- | --- |
-| TyEditor | ✓ | ✓ |
-| One Dark | ✓ | ✓ |
-| Solarized | ✓ | ✓ |
-| Monokai | ✓ | ✓ |
-| Dracula | ✓ | ✓ |
-| Gruvbox | ✓ | ✓ |
-| High Contrast | ✓ | ✓ |
-
-设置位置：
-
-- `View > Editor Color Scheme`：即时切换
-- `Settings > Preferences... > Editor > Editor color scheme`：保存到 `settings.json`
-- `settings.json` 的 `numbers_style` 字段控制行号显示方式：`all`、`each5`、`each10`、`relative`、`none`
-- `settings.json` 的 `color_scheme` 字段：例如 `"One Dark"`
-
-配色作用于编辑器背景、文字、行号栏、选择、当前行、光标、书签和 EControl 的注释/字符串/数字/关键字/函数/类型/标签/属性等 token 颜色；切换界面主题或配色时不需要重启。
-
-## 界面主题
-
-`View > Interface Theme` 列出 TyControls 内置主题（default、system、adwaita、aero、antdesign、bootstrap、breeze、classic、fluent、macos、material3、office、showcase、ubuntu、win10、win11、xp）。选择后立即应用到主窗口、查找/替换、在文件中查找等对话框，并保存到 `settings.json` 的 `theme` 字段。
-
-`View > Dark Theme` 在主题的浅色/深色模式之间切换；`show_ruler`、`show_bookmark_margin` 默认均为 `false`。
-
-## 图标
-
-Logo 源文件为 `assets/tyeditor.svg`；运行时图标在 `data/icons/`：
-
-- `tyeditor.svg`
-- `tyeditor-256.png`、`tyeditor-128.png`、`tyeditor-64.png`、`tyeditor-32.png`
-- `tyeditor.ico`（多尺寸）
-
-程序启动时加载 `data/icons/tyeditor.ico`，并设置到 `Application.Icon` 与 TyControls 标题栏（`TitleBar.ShowIcon = True`）。
-
-Windows 构建脚本会通过 `TyEditor.rc` 把该多尺寸图标编译进 PE 的 `.rsrc`，资源管理器、任务栏和 Alt+Tab 因此都有图标；不依赖 Lazarus 在命令行构建时生成 `.res`。
-
-## 分屏、宏与书签
-
-- `View > Split View (read-only)`（F8）在右侧显示只读副本，滚动和光标独立，不会覆盖编辑缓冲区。
-- `Macro > Macro Manager...` 管理宏文件，`Ctrl+F9` 播放绑定宏。
-- `Search > Bookmark List...` 显示全部书签，支持跳转/删除；书签菜单可选择 1–5 组，边栏颜色随组变化。
-- `View > Editor Color Scheme > Edit / Import / Export...` 编辑或交换 JSON 配色方案。
-
-## 第三方组件
-
-- TyControls：见其仓库许可证。
-- ATSynEdit / ATSynEdit_Ex：MPL 2.0 或 LGPL。
-- EControl：见其仓库许可证。
-- `data/lexlib/lib.lxl` 来自 ATSynEdit/CudaText 生态，随项目分发时保留来源说明。
+TyEditor is licensed under the [Apache License 2.0](LICENSE). Third-party
+components and data remain under their own licenses; see
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and [NOTICE](NOTICE).

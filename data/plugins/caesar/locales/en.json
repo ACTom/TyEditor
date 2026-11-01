@@ -1,0 +1,6 @@
+{
+  "plugin.name": "Caesar Cipher",
+  "plugin.description": "Demo encryption/decryption: shift ASCII letters in the selection.",
+  "command.encrypt.title": "Encrypt Selection (shift 3)",
+  "command.decrypt.title": "Decrypt Selection (shift 3)"
+}

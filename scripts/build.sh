@@ -1,13 +1,42 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
-DIST="$ROOT/dist/linux-x86_64"
 
-"$LAZBUILD" --pcp="$PCP" --ws=qt6 "${UNIT_OPTS[@]}" "$ROOT/TyEditor.lpi"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TARGET="${1:-linux-x86_64}"
 
-mkdir -p "$DIST"
-cp "$ROOT/TyEditor" "$DIST/TyEditor"
-strip_binary "$DIST/TyEditor"
-rm -f "$ROOT/TyEditor" "$ROOT/TyEditor.res"
-copy_runtime "$DIST"
-echo "Linux Qt6 build: $DIST/TyEditor"
+case "$TARGET" in
+  linux-x86_64)
+    exec "$ROOT/build/linux-x86_64.sh" "${@:2}"
+    ;;
+  linux-aarch64)
+    exec "$ROOT/build/linux-aarch64.sh" "${@:2}"
+    ;;
+  win32)
+    exec "$ROOT/build/win32.sh" "${@:2}"
+    ;;
+  win64)
+    exec "$ROOT/build/win64.sh" "${@:2}"
+    ;;
+  macos)
+    exec "$ROOT/build/macos.sh" "${@:2}"
+    ;;
+  all)
+    "$ROOT/build/linux-x86_64.sh"
+    "$ROOT/build/win32.sh"
+    "$ROOT/build/win64.sh"
+    ;;
+  *)
+    cat >&2 <<'EOF'
+Usage: scripts/build.sh TARGET
+
+Targets:
+  linux-x86_64   native Linux build (default)
+  linux-aarch64  Linux aarch64 cross build
+  win32          Windows i386 cross build
+  win64          Windows x86_64 cross build
+  macos          macOS x86_64/universal cross build
+  all            linux-x86_64 + win32 + win64
+EOF
+    exit 2
+    ;;
+esac

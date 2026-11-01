@@ -1,0 +1,11 @@
+{
+  "plugin.name": "JSON Formatter",
+  "plugin.description": "Format or minify a JSON document.",
+  "command.format.title": "Format JSON",
+  "command.minify.title": "Minify JSON",
+  "option.indent.label": "Indentation",
+  "option.indent.choice.2": "2 spaces",
+  "option.indent.choice.4": "4 spaces",
+  "option.sort_keys.label": "Sort object keys",
+  "error.invalid_json": "The document is not valid JSON."
+}

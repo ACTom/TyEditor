@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "api": 1,
+  "id": "sample.texttools",
+  "name": "Text Tools",
+  "version": "1.0.0",
+  "description": "Simple formatting operations for the current selection or document.",
+  "default_locale": "en",
+  "runtime": {
+    "type": "process",
+    "command": [
+      "python3",
+      "${pluginDir}/plugin.py"
+    ]
+  },
+  "timeout_ms": 5000,
+  "compatibility": {
+    "platforms": [
+      "any"
+    ]
+  },
+  "permissions": [
+    "text.read",
+    "text.write"
+  ],
+  "commands": [
+    {
+      "id": "upper",
+      "title": "Uppercase Selection",
+      "scope": "selection"
+    },
+    {
+      "id": "lower",
+      "title": "Lowercase Selection",
+      "scope": "selection"
+    },
+    {
+      "id": "title",
+      "title": "Title Case Selection",
+      "scope": "selection"
+    },
+    {
+      "id": "trim",
+      "title": "Trim Trailing Spaces",
+      "scope": "document"
+    }
+  ],
+  "options": []
+}

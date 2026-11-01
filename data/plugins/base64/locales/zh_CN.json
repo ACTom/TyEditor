@@ -1,0 +1,7 @@
+{
+  "plugin.name": "Base64 工具",
+  "plugin.description": "将当前选区按 Base64 编码或解码。",
+  "command.encode.title": "将选区编码为 Base64",
+  "command.decode.title": "将选区从 Base64 解码",
+  "error.decode": "选区不是有效的 Base64 文本。"
+}

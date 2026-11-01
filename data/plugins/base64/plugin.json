@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "api": 1,
+  "id": "sample.base64",
+  "name": "Base64 Tools",
+  "version": "1.0.0",
+  "description": "Encode or decode the current selection as Base64.",
+  "default_locale": "en",
+  "runtime": {
+    "type": "process",
+    "command": [
+      "python3",
+      "${pluginDir}/plugin.py"
+    ]
+  },
+  "timeout_ms": 5000,
+  "compatibility": {
+    "platforms": [
+      "any"
+    ]
+  },
+  "permissions": [
+    "text.read",
+    "text.write"
+  ],
+  "commands": [
+    {
+      "id": "encode",
+      "title": "Encode Selection as Base64",
+      "scope": "selection"
+    },
+    {
+      "id": "decode",
+      "title": "Decode Selection from Base64",
+      "scope": "selection"
+    }
+  ],
+  "options": []
+}

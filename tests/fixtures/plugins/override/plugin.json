@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "api": 1,
+  "id": "sample.caesar",
+  "name": "User Caesar Override",
+  "version": "9.9.9",
+  "description": "User override fixture.",
+  "default_locale": "en",
+  "runtime": {"type": "process", "command": ["python3", "${pluginDir}/plugin.py"]},
+  "timeout_ms": 1000,
+  "compatibility": {"platforms": ["any"]},
+  "commands": [{"id": "run", "title": "Run User Override", "scope": "selection"}]
+}

@@ -1,0 +1,8 @@
+{
+  "plugin.name": "文本工具",
+  "plugin.description": "对当前选区或文档执行简单的格式转换。",
+  "command.upper.title": "选区转为大写",
+  "command.lower.title": "选区转为小写",
+  "command.title.title": "选区转为标题大小写",
+  "command.trim.title": "去除行尾空格"
+}

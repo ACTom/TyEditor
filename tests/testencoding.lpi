@@ -20,7 +20,8 @@
     <Version Value="11"/>
     <Target><Filename Value="testencoding"/></Target>
     <SearchPaths>
-      <OtherUnitFiles Value=".;../src"/>
+      <IncludeFiles Value="../src"/>
+      <OtherUnitFiles Value=".;../src/core;../src/ui;../src/syntax;../src/platform;../src/plugins"/>
       <UnitOutputDirectory Value="../build/lib/$(TargetCPU)-$(TargetOS)/tests"/>
     </SearchPaths>
     <SyntaxOptions><SyntaxMode Value="ObjFPC"/></SyntaxOptions>

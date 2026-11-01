@@ -1,0 +1,11 @@
+{
+  "plugin.name": "JSON 格式化",
+  "plugin.description": "格式化或压缩 JSON 文档。",
+  "command.format.title": "格式化 JSON",
+  "command.minify.title": "压缩 JSON",
+  "option.indent.label": "缩进",
+  "option.indent.choice.2": "2 个空格",
+  "option.indent.choice.4": "4 个空格",
+  "option.sort_keys.label": "排序对象键",
+  "error.invalid_json": "文档不是有效的 JSON。"
+}

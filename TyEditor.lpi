@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="12"/>
+    <Version Value="13"/>
     <General>
       <Flags>
-        <MainUnitHasCreateFormStatements Value="True"/>
         <MainUnitHasTitleStatement Value="False"/>
       </Flags>
       <Title Value="TyEditor"/>
@@ -19,43 +18,279 @@
       <EnableI18N Value="True"/>
       <OutDir Value="languages"/>
     </i18n>
-    <BuildModes Count="1"><Item1 Name="Default" Default="True"/></BuildModes>
-    <RequiredPackages Count="6">
-      <Item1><PackageName Value="LCL"/></Item1>
-      <Item2><PackageName Value="tycontrols"/></Item2>
-      <Item3><PackageName Value="atsynedit_package"/></Item3>
-      <Item4><PackageName Value="atsynedit_ex_package"/></Item4>
-      <Item5><PackageName Value="econtrol_package"/></Item5>
-      <Item6><PackageName Value="encconv_package"/></Item6>
+    <VersionInfo>
+      <UseVersionInfo Value="True"/>
+      <MajorVersionNr Value="0"/>
+      <MinorVersionNr Value="1"/>
+      <RevisionNr Value="0"/>
+      <BuildNr Value="0"/>
+      <Language Value="0409"/>
+      <CharSet Value="04B0"/>
+      <StringTable ProductName="TyEditor" ProductVersion="0.1.0" FileDescription="TyEditor" LegalCopyright="Copyright (c) TyEditor contributors"/>
+    </VersionInfo>
+    <BuildModes Active="Default">
+      <Item Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+    </RunParams>
+    <RequiredPackages>
+      <Item>
+        <PackageName Value="LCL"/>
+      </Item>
+      <Item>
+        <PackageName Value="tycontrols"/>
+      </Item>
+      <Item>
+        <PackageName Value="atsynedit_package"/>
+      </Item>
+      <Item>
+        <PackageName Value="atsynedit_ex_package"/>
+      </Item>
+      <Item>
+        <PackageName Value="econtrol_package"/>
+      </Item>
+      <Item>
+        <PackageName Value="encconv_package"/>
+      </Item>
+      <Item>
+        <PackageName Value="pascalscript"/>
+      </Item>
     </RequiredPackages>
-    <Units Count="26">
-      <Unit0><Filename Value="TyEditor.lpr"/><IsPartOfProject Value="True"/></Unit0>
-      <Unit1><Filename Value="src/uutils.pas"/><IsPartOfProject Value="True"/><UnitName Value="uutils"/></Unit1>
-      <Unit2><Filename Value="src/usettings.pas"/><IsPartOfProject Value="True"/><UnitName Value="usettings"/></Unit2>
-      <Unit3><Filename Value="src/uencoding.pas"/><IsPartOfProject Value="True"/><UnitName Value="uencoding"/></Unit3>
-      <Unit4><Filename Value="src/ulanguage.pas"/><IsPartOfProject Value="True"/><UnitName Value="ulanguage"/></Unit4>
-      <Unit5><Filename Value="src/umacro.pas"/><IsPartOfProject Value="True"/><UnitName Value="umacro"/></Unit5>
-      <Unit6><Filename Value="src/ueditortab.pas"/><IsPartOfProject Value="True"/><UnitName Value="ueditortab"/></Unit6>
-      <Unit7><Filename Value="src/usession.pas"/><IsPartOfProject Value="True"/><UnitName Value="usession"/></Unit7>
-      <Unit8><Filename Value="src/ufind.pas"/><IsPartOfProject Value="True"/><UnitName Value="ufind"/></Unit8>
-      <Unit9><Filename Value="src/ufindfiles.pas"/><IsPartOfProject Value="True"/><UnitName Value="ufindfiles"/></Unit9>
-      <Unit10><Filename Value="src/ufindfilesdlg.pas"/><IsPartOfProject Value="True"/><UnitName Value="ufindfilesdlg"/></Unit10>
-      <Unit11><Filename Value="src/utranslation.pas"/><IsPartOfProject Value="True"/><UnitName Value="utranslation"/></Unit11>
-      <Unit12><Filename Value="src/umain.pas"/><IsPartOfProject Value="True"/><UnitName Value="umain"/></Unit12>
-    
-      <Unit13><Filename Value="src/usettingsdlg.pas"/><IsPartOfProject Value="True"/><UnitName Value="usettingsdlg"/></Unit13>
-      <Unit14><Filename Value="src/ucolorscheme.pas"/><IsPartOfProject Value="True"/><UnitName Value="ucolorscheme"/></Unit14>
-      <Unit15><Filename Value="src/umacromanager.pas"/><IsPartOfProject Value="True"/><UnitName Value="umacromanager"/></Unit15>
-      <Unit16><Filename Value="src/ubookmarklist.pas"/><IsPartOfProject Value="True"/><UnitName Value="ubookmarklist"/></Unit16>
-      <Unit17><Filename Value="src/ucolorschemeeditor.pas"/><IsPartOfProject Value="True"/><UnitName Value="ucolorschemeeditor"/></Unit17>
-      <Unit18><Filename Value="src/usingleinstance.pas"/><IsPartOfProject Value="True"/><UnitName Value="usingleinstance"/></Unit18>
-      <Unit19><Filename Value="src/uplatform.pas"/><IsPartOfProject Value="True"/><UnitName Value="uplatform"/></Unit19>
-      <Unit20><Filename Value="src/uwinproc.pas"/><IsPartOfProject Value="True"/><UnitName Value="uwinproc"/></Unit20>
-      <Unit21><Filename Value="src/usplitview.pas"/><IsPartOfProject Value="True"/><UnitName Value="usplitview"/></Unit21>
-      <Unit22><Filename Value="src/uresults.pas"/><IsPartOfProject Value="True"/><UnitName Value="uresults"/></Unit22>
-      <Unit23><Filename Value="src/ustatus.pas"/><IsPartOfProject Value="True"/><UnitName Value="ustatus"/></Unit23>
-      <Unit24><Filename Value="src/ucommands.pas"/><IsPartOfProject Value="True"/><UnitName Value="ucommands"/></Unit24>
-      <Unit25><Filename Value="src/umenubuilder.pas"/><IsPartOfProject Value="True"/><UnitName Value="umenubuilder"/></Unit25></Units>
+    <Units>
+      <Unit>
+        <Filename Value="TyEditor.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/core/uutils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/core/usettings.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/core/uencoding.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/syntax/ulanguage.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/core/umacro.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/core/ueditortab.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/core/usession.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/ufind.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/ufindfiles.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/ufindfilesdlg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/core/utranslation.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/umain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/usettingsdlg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/core/ucolorscheme.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/umacromanager.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/ubookmarklist.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/ucolorschemeeditor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/platform/usingleinstance.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/platform/uplatform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/platform/uwinproc.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/usplitview.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/uresults.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/ustatus.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/core/ucommands.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/umenubuilder.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/syntax/usyntaxdefs.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/plugins/upluginapi.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/plugins/upluginruntime.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/plugins/upluginhost.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/plugins/upluginmanager.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/upluginmanagerdlg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/upluginoptionsdlg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/upluginrun.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/core/utools.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/utooleditdlg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/utoolmanagerdlg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="src/ui/utoolrun.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
@@ -63,10 +298,13 @@
       <Filename Value="TyEditor"/>
     </Target>
     <SearchPaths>
-      <OtherUnitFiles Value="src"/>
+      <IncludeFiles Value="src"/>
+      <OtherUnitFiles Value="src/core;src/ui;src/syntax;src/platform;src/plugins"/>
       <UnitOutputDirectory Value="build/lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
-    <SyntaxOptions><SyntaxMode Value="ObjFPC"/></SyntaxOptions>
+    <SyntaxOptions>
+      <SyntaxMode Value="ObjFPC"/>
+    </SyntaxOptions>
     <Linking>
       <Options>
         <Win32>

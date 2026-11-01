@@ -1,0 +1,8 @@
+{
+  "plugin.name": "External Formatter",
+  "plugin.description": "Run clang-format on the current selection or document.",
+  "command.selection.title": "Format Selection with clang-format",
+  "command.document.title": "Format Document with clang-format",
+  "error.not_found": "clang-format was not found on PATH.",
+  "error.failed": "clang-format failed."
+}

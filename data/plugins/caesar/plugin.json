@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "api": 1,
+  "id": "sample.caesar",
+  "name": "Caesar Cipher",
+  "version": "1.0.0",
+  "description": "Demo encryption/decryption: shift ASCII letters in the selection.",
+  "default_locale": "en",
+  "runtime": {
+    "type": "process",
+    "command": [
+      "python3",
+      "${pluginDir}/plugin.py"
+    ]
+  },
+  "timeout_ms": 5000,
+  "compatibility": {
+    "platforms": [
+      "any"
+    ]
+  },
+  "permissions": [
+    "text.read",
+    "text.write"
+  ],
+  "commands": [
+    {
+      "id": "encrypt",
+      "title": "Encrypt Selection (shift 3)",
+      "scope": "selection"
+    },
+    {
+      "id": "decrypt",
+      "title": "Decrypt Selection (shift 3)",
+      "scope": "selection"
+    }
+  ],
+  "options": []
+}

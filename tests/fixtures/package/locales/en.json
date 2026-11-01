@@ -1,0 +1,5 @@
+{
+  "plugin.name": "Package Test",
+  "plugin.description": "Fixture for installing a .typlugin package.",
+  "command.run.title": "Run Package Test"
+}

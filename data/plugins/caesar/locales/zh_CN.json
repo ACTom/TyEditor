@@ -1,0 +1,6 @@
+{
+  "plugin.name": "凯撒密码",
+  "plugin.description": "演示加密/解密：对选区中的 ASCII 字母进行移位。",
+  "command.encrypt.title": "加密选区（移位 3）",
+  "command.decrypt.title": "解密选区（移位 3）"
+}

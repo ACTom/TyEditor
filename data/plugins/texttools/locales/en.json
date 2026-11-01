@@ -1,0 +1,8 @@
+{
+  "plugin.name": "Text Tools",
+  "plugin.description": "Simple formatting operations for the current selection or document.",
+  "command.upper.title": "Uppercase Selection",
+  "command.lower.title": "Lowercase Selection",
+  "command.title.title": "Title Case Selection",
+  "command.trim.title": "Trim Trailing Spaces"
+}

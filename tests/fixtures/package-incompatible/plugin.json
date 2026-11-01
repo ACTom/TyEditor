@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "api": 1,
+  "id": "test.incompatible",
+  "name": "Incompatible Test",
+  "version": "1.0.0",
+  "description": "Package used to verify compatibility handling.",
+  "default_locale": "en",
+  "compatibility": {
+    "editor": ">=99.0.0",
+    "platforms": ["any"]
+  },
+  "runtime": {
+    "type": "pascalscript",
+    "entry": "main.ps"
+  },
+  "commands": [
+    {
+      "id": "run",
+      "title": "Run",
+      "scope": "document"
+    }
+  ]
+}

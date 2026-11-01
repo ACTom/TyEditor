@@ -1,0 +1,6 @@
+{
+  "plugin.name": "Pascal Script Test",
+  "plugin.description": "Fixture for the embedded PascalScript runtime.",
+  "command.append.title": "Append Option",
+  "option.suffix.label": "Suffix"
+}

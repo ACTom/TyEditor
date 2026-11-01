@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "api": 1,
+  "id": "sample.jsonformat",
+  "name": "JSON Formatter",
+  "version": "1.0.0",
+  "description": "Format or minify a JSON document.",
+  "default_locale": "en",
+  "runtime": {
+    "type": "process",
+    "command": [
+      "python3",
+      "${pluginDir}/plugin.py"
+    ]
+  },
+  "timeout_ms": 5000,
+  "compatibility": {
+    "platforms": [
+      "any"
+    ]
+  },
+  "permissions": [
+    "text.read",
+    "text.write"
+  ],
+  "commands": [
+    {
+      "id": "format",
+      "title": "Format JSON",
+      "scope": "document"
+    },
+    {
+      "id": "minify",
+      "title": "Minify JSON",
+      "scope": "document"
+    }
+  ],
+  "options": [
+    {
+      "id": "indent",
+      "type": "choice",
+      "label": "Indentation",
+      "default": "2",
+      "choices": [
+        {
+          "value": "2",
+          "label": "2 spaces"
+        },
+        {
+          "value": "4",
+          "label": "4 spaces"
+        }
+      ]
+    },
+    {
+      "id": "sort_keys",
+      "type": "bool",
+      "label": "Sort object keys",
+      "default": "false"
+    }
+  ]
+}

@@ -1,16 +1,36 @@
+# Build outputs
 /TyEditor
 /TyEditor.exe
 /TyEditor.res
-/tyeditor_icon.res
 /TyEditor.app
+/tyeditor_icon.res
 /lib/
 /build/
 /dist/
-/tests/testfindfiles
+
+# Test binaries
 /tests/testencoding
-/tests/*.res
-/link*.res
+/tests/testfindasync
+/tests/testfindfiles
+/tests/testsyntax
+/tests/testplugins
+/tests/testtools
+
+# Local build configuration
+/scripts/env.local.sh
+
+# Local editor/tool leftovers
 /backup/
 *.bak
 *.ppu
 *.o
+*.res
+/link*.res
+
+# Local plans and session data
+/session.json
+/session.json.bak
+
+# Python cache
+__pycache__/
+*.pyc

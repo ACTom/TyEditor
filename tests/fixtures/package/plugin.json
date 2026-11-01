@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "api": 1,
+  "id": "test.package",
+  "name": "Package Test",
+  "version": "1.0.0",
+  "description": "Fixture for installing a .typlugin package.",
+  "default_locale": "en",
+  "runtime": {
+    "type": "pascalscript",
+    "entry": "main.ps"
+  },
+  "compatibility": {
+    "platforms": ["any"]
+  },
+  "commands": [
+    {
+      "id": "run",
+      "title": "Run Package Test",
+      "scope": "document"
+    }
+  ]
+}
