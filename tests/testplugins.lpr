@@ -515,7 +515,7 @@ begin
       if not Check(not Manager.InstallPackage(BadFile, ErrorText), 'archive without manifest accepted') then Halt(27);
     finally
       Manager.Free;
-      DeleteDirectory(ConfigDir, False, True);
+      DeleteDirectory(ConfigDir, False);
     end;
 
     WriteLn('RESULT ok');

@@ -57,9 +57,9 @@ begin
       OldDir := IncludeTrailingPathDelimiter(Parent) + 'tyedit' + PathDelim;
     if DirectoryExists(OldDir) then
     begin
-      CopyDirTree(OldDir, NewDir, [], True);
+      CopyDirTree(OldDir, NewDir, []);
       DeleteFile(NewDir + 'running.marker');
-      DeleteDirectory(NewDir + 'instance', True, True);
+      DeleteDirectory(NewDir + 'instance', True);
     end;
   end;
 

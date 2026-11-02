@@ -296,7 +296,7 @@ begin
   TempDir := IncludeTrailingPathDelimiter(GetTempDir(False)) +
     'tyeditor-plugin-' + IntToStr(GetProcessID) + '-' + IntToStr(Random(MaxInt));
   if DirectoryExists(TempDir) then
-    DeleteDirectory(TempDir, False, True);
+    DeleteDirectory(TempDir, False);
   ForceDirectories(TempDir);
   try
     UnZipper := TUnZipper.Create;
@@ -327,7 +327,7 @@ begin
     try
       TargetDir := IncludeTrailingPathDelimiter(FUserDir) + Plugin.Id;
       if DirectoryExists(TargetDir) and
-        (not DeleteDirectory(TargetDir, False, True)) then
+        (not DeleteDirectory(TargetDir, False)) then
       begin
         AError := 'Cannot replace existing plugin: ' + TargetDir;
         Exit;
@@ -344,7 +344,7 @@ begin
     end;
   finally
     if DirectoryExists(TempDir) then
-      DeleteDirectory(TempDir, False, True);
+      DeleteDirectory(TempDir, False);
     if (not Result) and (AError = '') then
       AError := 'Plugin package could not be installed';
   end;
@@ -375,7 +375,7 @@ begin
     AError := 'Plugin directory not found: ' + TargetDir;
     Exit;
   end;
-  if not DeleteDirectory(TargetDir, False, True) then
+  if not DeleteDirectory(TargetDir, False) then
   begin
     AError := 'Cannot remove plugin directory: ' + TargetDir;
     Exit;

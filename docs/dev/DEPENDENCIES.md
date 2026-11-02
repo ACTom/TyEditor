@@ -7,7 +7,7 @@ used for the current verification; newer compatible releases may work.
 
 | Component | Verified version | Notes |
 | --- | --- | --- |
-| Lazarus / `lazbuild` | 5.99 | Must provide the LCL widgetset used by the target |
+| Lazarus / `lazbuild` | 4.8+ | Must provide the LCL widgetset used by the target |
 | FPC | 3.2.3 | `ppcx64` and, for cross builds, the matching cross compiler |
 | TyControls | 3.99.x | Source checkout, added to the project search path |
 | ATSynEdit | 2.28 | Lazarus package `atsynedit_package` |

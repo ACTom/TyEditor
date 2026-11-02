@@ -89,6 +89,10 @@
       </Unit>
       <Unit>
         <Filename Value="src/core/uprint.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
         <Filename Value="src/core/uprintstyles.pas"/>
         <IsPartOfProject Value="True"/>
         <UsageCount Value="20"/>

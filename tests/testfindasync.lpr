@@ -55,7 +55,7 @@ begin
   RootDir := IncludeTrailingPathDelimiter(BaseDir) + 'root';
   SubDir := IncludeTrailingPathDelimiter(BaseDir) + 'sub';
   if DirectoryExists(BaseDir) then
-    DeleteDirectory(BaseDir, True, True);
+    DeleteDirectory(BaseDir, True);
   ForceDirectories(RootDir);
   ForceDirectories(SubDir);
 
@@ -108,6 +108,6 @@ begin
     WriteLn('RESULT ok');
   finally
     if DirectoryExists(BaseDir) then
-      DeleteDirectory(BaseDir, True, True);
+      DeleteDirectory(BaseDir, True);
   end;
 end.

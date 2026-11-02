@@ -171,7 +171,7 @@ begin
   ConfigDir := IncludeTrailingPathDelimiter(GetTempDir(False)) +
     'tyeditor-tools-test-' + IntToStr(GetProcessID);
   if DirectoryExists(ConfigDir) then
-    DeleteDirectory(ConfigDir, False, True);
+    DeleteDirectory(ConfigDir, False);
   ForceDirectories(ConfigDir);
 
   { Configuration round trip. }
@@ -332,7 +332,7 @@ begin
     if not Check(Store[0].Name = 'Good', 'valid entry lost') then Halt(33);
   finally
     Store.Free;
-    DeleteDirectory(ConfigDir, False, True);
+    DeleteDirectory(ConfigDir, False);
   end;
 
   WriteLn('RESULT ok');
