@@ -150,6 +150,12 @@ A command has a stable `id`, a default `title`, and a `scope`:
 | `document` | Sends the full document as `context.text` |
 | `none` | Does not require text |
 
+Command ids must be unique within a manifest (case-insensitive) and must not
+contain `:`, `=`, control characters or path separators. TyEditor uses the id as
+part of the stable shortcut key `plugin:<plugin-id>:<command-id>`. Shortcuts are
+assigned by the user in **Settings > Keyboard Shortcuts...**; the manifest cannot
+declare defaults in v1. Disabling a plugin keeps its saved shortcut assignments.
+
 Options are plugin-wide and are shown before each command invocation:
 
 ```json

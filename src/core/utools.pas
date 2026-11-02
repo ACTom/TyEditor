@@ -242,6 +242,17 @@ begin
       Exit(True);
 end;
 
+function IsValidToolId(const AId: string): Boolean;
+var
+  i: Integer;
+begin
+  Result := AId <> '';
+  if not Result then Exit;
+  for i := 1 to Length(AId) do
+    if (AId[i] = ':') or (AId[i] = '=') or (Ord(AId[i]) < 32) then
+      Exit(False);
+end;
+
 function ValidateTool(ATool: TExternalTool; out AError: string): Boolean;
 begin
   Result := False;
@@ -249,6 +260,11 @@ begin
   if ATool = nil then
   begin
     AError := 'Tool is missing';
+    Exit;
+  end;
+  if not IsValidToolId(ATool.Id) then
+  begin
+    AError := 'Tool id contains invalid characters';
     Exit;
   end;
   if Trim(ATool.Name) = '' then
@@ -391,7 +407,17 @@ begin
         Tool.Enabled := JsonBool(Item, 'enabled', True);
 
         Id := Trim(JsonStr(Item, 'id', ''));
-        if Id <> '' then Tool.Id := Id;
+        if Id <> '' then
+        begin
+          if not IsValidToolId(Id) then
+          begin
+            AddError(Format('Tool "%s" has an invalid id; a new id was generated',
+              [Tool.Name]));
+            Id := '';
+          end;
+          if Id <> '' then
+            Tool.Id := Id;
+        end;
 
         if (Tool.Name = '') or (Tool.Command = '') then
         begin

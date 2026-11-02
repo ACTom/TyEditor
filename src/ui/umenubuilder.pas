@@ -72,16 +72,24 @@ end;
 
 function TMenuBuilder.AddItem(AParent: TMenuItem; const ACaption: string;
   AShortCut: TShortCut; ACommand: TMenuCmd): TMenuItem;
+var
+  Item: TCommandMenuItem;
 begin
-  Result := TMenuItem.Create(FOwner);
-  Result.Caption := Tr(ACaption);
+  Item := TCommandMenuItem.Create(FOwner);
+  Item.Caption := Tr(ACaption);
   if AShortCut <> 0 then
-    Result.ShortCut := AShortCut;
-  Result.Tag := Ord(ACommand);
+    Item.ShortCut := AShortCut;
+  Item.Tag := Ord(ACommand);
+  Item.CommandSource := csBuiltin;
+  Item.DefaultShortCut := AShortCut;
   if ACommand <> mcNone then
-    Result.Name := ShortcutCommandID(ACommand);
-  Result.OnClick := FOnCommand;
-  AParent.Add(Result);
+  begin
+    Item.Name := ShortcutCommandID(ACommand);
+    Item.CommandID := ShortcutCommandID(ACommand);
+  end;
+  Item.OnClick := FOnCommand;
+  AParent.Add(Item);
+  Result := Item;
 end;
 
 procedure TMenuBuilder.AddSep(AParent: TMenuItem);

@@ -418,6 +418,11 @@
   "Print selection only": "只打印选区",
   "Select a command, then press the new key combination. Use Ctrl, Alt or Command with a key, or F1-F24 alone.": "选择命令后按下新的快捷键组合。普通按键需配合 Ctrl、Alt 或 Command，F1-F24 可单独使用。",
   "Shortcut already used by \"%s\". Replace it?": "快捷键已被“%s”使用。要替换吗？",
+  "Shortcut already used by:": "快捷键已被以下命令使用：",
+  "Replace all conflicting shortcuts?": "要替换所有冲突的快捷键吗？",
+  "This key is used by the editor action \"%s\". The menu shortcut will override it. Continue?": "该键已用于编辑器动作“%s”。菜单快捷键将覆盖它。要继续吗？",
+  "%d shortcut conflicts": "%d 个快捷键冲突",
+  "Other": "其他",
   "This shortcut is reserved by the application menu.": "该快捷键由应用菜单保留。",
   "Font and colors": "字体与颜色",
   "Tabs and display": "制表符与显示",
@@ -428,5 +433,7 @@
   "Right": "右",
   "Top": "上",
   "Syntax highlighting": "语法高亮",
-  "Font, colors and margins": "字体、颜色和页边距"
+  "Font, colors and margins": "字体、颜色和页边距",
+  "Plugins": "插件",
+  "Tools": "工具"
 }

@@ -321,6 +321,16 @@ begin
       State.Free;
     end;
 
+    { Invalid ids are replaced so they cannot corrupt the shortcut namespace. }
+    AtomicWriteString(Store.FileName,
+      '{"schema":1,"tools":[' +
+      '{"id":"bad:id","name":"Bad Id","command":"echo","input":"none","output":"none"}]}');
+    Store.Load;
+    if not Check(Store.Count = 1, 'invalid tool id dropped') then Halt(34);
+    if not Check(Pos('invalid id', LowerCase(Store.Errors.Text)) > 0,
+      'invalid tool id not reported') then Halt(35);
+    if not Check(Pos(':', Store[0].Id) = 0, 'invalid tool id retained') then Halt(36);
+
     { Unknown or incomplete entries are skipped and reported. }
     AtomicWriteString(Store.FileName,
       '{"schema":1,"tools":[' +

@@ -169,8 +169,11 @@ Search dialogs no longer have their own Preferences page; each dialog remembers
 its last-used case, whole-word, regex and wrap options.
 
 Use **Settings > Keyboard Shortcuts...** to inspect and change menu shortcuts.
-Defaults are restored with **Reset Selected** or **Reset All**; assigning a
-shortcut that is already in use asks whether to replace the existing command.
+Commands are grouped by menu, including enabled plugin commands and external
+tools. Defaults are restored with **Reset Selected** or **Reset All**; assigning
+a shortcut that is already in use lists all conflicting commands and asks whether
+to replace them. Existing duplicate assignments are marked with `⚠` when the
+dialog opens.
 On macOS, Preferences and Keyboard Shortcuts live in the application menu and
 are not user-customizable.
 

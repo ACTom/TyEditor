@@ -169,6 +169,11 @@
         <UsageCount Value="20"/>
       </Unit>
       <Unit>
+        <Filename Value="src/ui/ueditorkeymap.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
         <Filename Value="src/ui/uprintsetupdlg.pas"/>
         <IsPartOfProject Value="True"/>
         <UsageCount Value="20"/>

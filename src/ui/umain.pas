@@ -13,7 +13,7 @@ uses
   tyControls.Menu, tyControls.Panel, tyControls.ListBox, tyControls.TyLabel,
   tyControls.Dialogs,
   ATSynEdit, ATSynEdit_Carets, ATSynEdit_Commands, ATSynEdit_Globals,
-  ATSynEdit_Bookmarks, ATSynEdit_Adapter_EControl, ATStringProc, atscrollbar,
+  ATSynEdit_Keymap, ATSynEdit_Bookmarks, ATSynEdit_Adapter_EControl, ATStringProc, atscrollbar,
   ec_SyntAnal,
   uutils, usettings, uencoding, ulanguage, umacro, ueditortab, usession,
   ufind, ufindfilesdlg, utranslation, usettingsdlg, ushortcutsdlg, ucolorscheme,
@@ -21,7 +21,7 @@ uses
   usplitview, uresults, ustatus, ucommands, umenubuilder,
   upluginapi, upluginmanager, upluginmanagerdlg, upluginoptionsdlg, upluginrun,
   upluginruntime, utools, utoolmanagerdlg, utoolrun, ukeybindings,
-  uprint, uprintstyles, uprintsetupdlg, uprintpreview;
+  ueditorkeymap, uprint, uprintstyles, uprintsetupdlg, uprintpreview;
 
 type
   TPluginMenuAction = class
@@ -70,6 +70,7 @@ type
     FTabPopup: TTyPopupMenu;
     FOpenTabsMenu, FPluginMenu, FSettingsMenu: TMenuItem;
     FShortcutManager: TShortcutManager;
+    FEditorKeymap: TATKeymap;
     FShortcutsReady: Boolean;
     FPluginManager: TPluginManager;
     FPluginActions: TList;
@@ -359,6 +360,7 @@ begin
 
   BuildChrome;
   BuildMenu;
+  FEditorKeymap := CreateManagedEditorKeymap;
   RebuildOpenTabsMenu;
   BuildBottomPanel;
   ApplyAppTheme;
@@ -438,6 +440,7 @@ begin
   end;
   if FLanguage <> nil then FreeAndNil(FLanguage);
   if FMacro <> nil then FreeAndNil(FMacro);
+  if FEditorKeymap <> nil then FreeAndNil(FEditorKeymap);
   if FShortcutManager <> nil then FreeAndNil(FShortcutManager);
   if FSettings <> nil then FreeAndNil(FSettings);
   if FLexerNames <> nil then FreeAndNil(FLexerNames);
@@ -527,18 +530,26 @@ end;
 function TMainForm.AddItem(AParent: TMenuItem; const ACaption: string;
   AShortCut: TShortCut; ACommand: TMenuCmd; AChecked: Boolean;
   ARadio: Boolean): TMenuItem;
+var
+  Item: TCommandMenuItem;
 begin
-  Result := TMenuItem.Create(FMainMenu);
-  Result.Caption := Tr(ACaption);
+  Item := TCommandMenuItem.Create(FMainMenu);
+  Item.Caption := Tr(ACaption);
   if AShortCut <> 0 then
-    Result.ShortCut := AShortCut;
-  Result.Tag := Ord(ACommand);
+    Item.ShortCut := AShortCut;
+  Item.Tag := Ord(ACommand);
+  Item.CommandSource := csBuiltin;
+  Item.DefaultShortCut := AShortCut;
   if ACommand <> mcNone then
-    Result.Name := ShortcutCommandID(ACommand);
-  Result.OnClick := @MenuClick;
-  Result.Checked := AChecked;
-  Result.RadioItem := ARadio;
-  AParent.Add(Result);
+  begin
+    Item.Name := ShortcutCommandID(ACommand);
+    Item.CommandID := ShortcutCommandID(ACommand);
+  end;
+  Item.OnClick := @MenuClick;
+  Item.Checked := AChecked;
+  Item.RadioItem := ARadio;
+  AParent.Add(Item);
+  Result := Item;
 end;
 
 procedure TMainForm.AddSep(AParent: TMenuItem);
@@ -626,11 +637,16 @@ begin
   if FShortcutManager <> nil then
   begin
     for I := 0 to FMainMenu.Items.Count - 1 do
-      FShortcutManager.CaptureDefaults(FMainMenu.Items[I]);
-    FShortcutManager.CaptureDefaults(FSettingsMenu);
+      FShortcutManager.CaptureDefaults(FMainMenu.Items[I],
+        StringReplace(FMainMenu.Items[I].Caption, '&', '', [rfReplaceAll]));
+    {$IFDEF LCLCocoa}
+    FShortcutManager.CaptureDefaults(FSettingsMenu, 'Application');
+    {$ENDIF}
     for I := 0 to FMainMenu.Items.Count - 1 do
       FShortcutManager.Apply(FMainMenu.Items[I]);
+    {$IFDEF LCLCocoa}
     FShortcutManager.Apply(FSettingsMenu);
+    {$ENDIF}
   end;
   FShortcutsReady := True;
 end;
@@ -1020,6 +1036,8 @@ begin
     Id := ASessionId;
   Page := FPages.AddPage(ATitle);
   Result := TEditorTab.Create(Self, Page, Id, FSettings);
+  if FEditorKeymap <> nil then
+    Result.Editor.Keymap := FEditorKeymap;
   ApplyEditorTheme(Result.Editor);
   Result.Editor.OnChange := @EditorChanged;
   Result.Editor.OnChangeCaretPos := @EditorCaretChanged;
@@ -1648,8 +1666,11 @@ var
   Command: TPluginCommand;
   MenuAction: TPluginMenuAction;
   Sub, Item: TMenuItem;
+  CmdItem: TCommandMenuItem;
 begin
   if FPluginMenu = nil then Exit;
+  if FShortcutManager <> nil then
+    FShortcutManager.UnregisterSource(csPlugin);
   FPluginMenu.Clear;
   for i := 0 to FPluginActions.Count - 1 do
     TPluginMenuAction(FPluginActions[i]).Free;
@@ -1665,15 +1686,19 @@ begin
     for j := 0 to Plugin.Commands.Count - 1 do
     begin
       Command := TPluginCommand(Plugin.Commands[j]);
-      Item := TMenuItem.Create(FMainMenu);
-      Item.Caption := Plugin.CommandTitle(Command);
+      CmdItem := TCommandMenuItem.Create(FMainMenu);
+      CmdItem.Caption := Plugin.CommandTitle(Command);
+      CmdItem.CommandID := PluginShortcutID(Plugin.Id, Command.Id);
+      CmdItem.CommandGroup := Tr('Plugins') + ' — ' + Plugin.LocalizedName;
+      CmdItem.CommandSource := csPlugin;
+      CmdItem.DefaultShortCut := 0;
       MenuAction := TPluginMenuAction.Create;
       MenuAction.Plugin := Plugin;
       MenuAction.Command := Command;
       Index := FPluginActions.Add(MenuAction);
-      Item.Tag := Index;
-      Item.OnClick := @PluginActionClick;
-      Sub.Add(Item);
+      CmdItem.Tag := Index;
+      CmdItem.OnClick := @PluginActionClick;
+      Sub.Add(CmdItem);
     end;
   end;
 
@@ -1715,6 +1740,12 @@ begin
     Item.Caption := Format(Tr('Plugin Errors (%d)...'), [FPluginManager.Errors.Count]);
     Item.OnClick := @ShowPluginErrorsClick;
     FPluginMenu.Add(Item);
+  end;
+
+  if FShortcutManager <> nil then
+  begin
+    FShortcutManager.CaptureDefaults(FPluginMenu, Tr('Plugins'));
+    FShortcutManager.Apply(FPluginMenu);
   end;
 end;
 
@@ -2028,19 +2059,26 @@ var
   i, EnabledCount: Integer;
   Tool: TExternalTool;
   Item: TMenuItem;
+  CmdItem: TCommandMenuItem;
 begin
   if FToolsMenu = nil then Exit;
+  if FShortcutManager <> nil then
+    FShortcutManager.UnregisterSource(csTool);
   FToolsMenu.Clear;
   EnabledCount := 0;
   for i := 0 to FToolStore.Count - 1 do
   begin
     Tool := FToolStore[i];
     if not Tool.Enabled then Continue;
-    Item := TMenuItem.Create(FMainMenu);
-    Item.Caption := Tool.Name;
-    Item.Tag := i;
-    Item.OnClick := @ToolActionClick;
-    FToolsMenu.Add(Item);
+    CmdItem := TCommandMenuItem.Create(FMainMenu);
+    CmdItem.Caption := Tool.Name;
+    CmdItem.Tag := i;
+    CmdItem.CommandID := ToolShortcutID(Tool.Id);
+    CmdItem.CommandGroup := Tr('Tools') + ' — ' + Tool.Name;
+    CmdItem.CommandSource := csTool;
+    CmdItem.DefaultShortCut := 0;
+    CmdItem.OnClick := @ToolActionClick;
+    FToolsMenu.Add(CmdItem);
     Inc(EnabledCount);
   end;
 
@@ -2072,6 +2110,12 @@ begin
     Item.Caption := Format(Tr('Tool Errors (%d)...'), [FToolStore.Errors.Count]);
     Item.OnClick := @ShowToolErrorsClick;
     FToolsMenu.Add(Item);
+  end;
+
+  if FShortcutManager <> nil then
+  begin
+    FShortcutManager.CaptureDefaults(FToolsMenu, Tr('Tools'));
+    FShortcutManager.Apply(FToolsMenu);
   end;
 end;
 
@@ -4213,7 +4257,8 @@ begin
   {$IFDEF LCLCocoa}
   Extra := FSettingsMenu;
   {$ENDIF}
-  Dlg := TShortcutsForm.Create(Self, FSettings, FShortcutManager, FMainMenu, Extra);
+  Dlg := TShortcutsForm.Create(Self, FSettings, FShortcutManager, FMainMenu, Extra,
+    FEditorKeymap);
   try
     if Dlg.Execute then
       FSettings.Save;

@@ -49,6 +49,15 @@ Bundled plugins can be disabled but not uninstalled.
 A progress dialog appears while a plugin runs. **Cancel** asks the runtime to
 stop; the UI remains responsive.
 
+## Keyboard shortcuts
+
+Enabled plugin commands appear in **Settings > Keyboard Shortcuts...** under
+`Plugins — <plugin name>`. Shortcuts are assigned by the user and stored by the
+stable plugin and command ids; the plugin manifest does not declare default
+shortcuts. Reloading or restarting keeps the assignments. Disabling a plugin
+removes its commands from the shortcut editor but keeps their saved shortcuts;
+enabling it again restores them.
+
 ## Managing plugins
 
 Choose **Plugins > Manage Plugins...**. The manager:

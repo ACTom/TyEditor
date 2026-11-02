@@ -235,19 +235,30 @@ Lazarus.
 
 ### 13. Shortcuts and Preferences
 
-1. Open **Settings > Keyboard Shortcuts...**; verify all command rows and their
-   current shortcuts appear.
+1. Open **Settings > Keyboard Shortcuts...**; verify commands are grouped by
+   menu, with plugin commands and enabled tools in their own groups.
 2. Assign a new combination, close and reopen the dialog, then restart TyEditor
    and verify the menu shows the saved combination.
-3. Try to assign a shortcut already used by another command, cancel the
-   replacement prompt, then repeat and confirm replacement; use **Reset
-   Selected** and **Reset All** and verify defaults return.
-4. Cancel the dialog after changing a shortcut and verify the previous value is
+3. Try to assign a shortcut already used by several commands; verify every
+   conflict is listed. Cancel the replacement prompt, then repeat and confirm
+   that all conflicting assignments are cleared.
+4. Edit `settings.json` by hand to give two commands the same shortcut, reopen
+   the dialog and verify both rows show `⚠`.
+5. Use **Reset Selected** and **Reset All** and verify defaults return.
+6. Cancel the dialog after changing a shortcut and verify the previous value is
    restored.
-5. Open Preferences and switch all five categories; verify the pages scroll when
-   the window is small, and that backup folder shows the effective default path.
-6. Change search options in Find/Replace and Find in Files, close both dialogs,
-   restart TyEditor and verify the last-used options are restored.
-7. On macOS, verify **Preferences...** (`Cmd+,`) and **Keyboard Shortcuts...**
-   (`Cmd+Alt+K`) appear in the application menu and no top-level Settings menu
-   is shown.
+7. Verify a plugin command shortcut survives **Reload Plugins** and a restart.
+   Disable the plugin and verify the setting is retained; enable it again and
+   verify the shortcut is restored.
+8. Verify an external tool shortcut survives **Reload Tools**. Disable the tool
+   and verify the shortcut returns when it is enabled again.
+9. Set a menu command to a key used by a non-menu editor action and verify the
+   warning appears; the menu shortcut should take precedence.
+10. Open Preferences and switch all five categories; verify the pages scroll
+    when the window is small, and that backup folder shows the effective default
+    path.
+11. Change search options in Find/Replace and Find in Files, close both dialogs,
+    restart TyEditor and verify the last-used options are restored.
+12. On macOS, verify **Preferences...** (`Cmd+,`) and **Keyboard Shortcuts...**
+    (`Cmd+Alt+K`) appear in the application menu and no top-level Settings menu
+    is shown.

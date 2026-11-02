@@ -1,7 +1,7 @@
 program testplugins;
 {$mode objfpc}{$H+}
 uses
-  SysUtils, fpjson, FileUtil, zipper, upluginapi, upluginhost, upluginmanager;
+  SysUtils, Classes, fpjson, FileUtil, zipper, upluginapi, upluginhost, upluginmanager;
 
 function Check(ACond: Boolean; const AMessage: string): Boolean;
 begin
@@ -53,6 +53,9 @@ var
   ErrorText, Kind, Root, ConfigDir: string;
   ActionText: string;
   FixtureRoot, PackageRoot, IncompatRoot, PackageFile, BadFile: string;
+  ManifestFile: string;
+  ManifestText: TStringList;
+  BadPlugin: TPluginInfo;
   StartTick: QWord;
   BundledOnly: Boolean;
   Zip: TZipper;
@@ -422,6 +425,34 @@ begin
     ConfigDir := IncludeTrailingPathDelimiter(GetTempDir(False)) +
       'tyeditor-plugin-test-' + IntToStr(GetProcessID);
     ForceDirectories(ConfigDir);
+
+    ManifestText := TStringList.Create;
+    try
+      ManifestFile := IncludeTrailingPathDelimiter(ConfigDir) + 'duplicate.json';
+      ManifestText.Text :=
+        '{"api":1,"schema":1,"id":"test.duplicate","name":"Duplicate",' +
+        '"runtime":{"type":"pascalscript","entry":"main"},"commands":[' +
+        '{"id":"same","title":"One"},{"id":"same","title":"Two"}]}';
+      ManifestText.SaveToFile(ManifestFile);
+      BadPlugin := ParsePluginManifest(ManifestFile, ErrorText);
+      if BadPlugin <> nil then FreeAndNil(BadPlugin);
+      if not Check(Pos('duplicate command', LowerCase(ErrorText)) > 0,
+        'duplicate command id not rejected: ' + ErrorText) then Halt(68);
+
+      ManifestFile := IncludeTrailingPathDelimiter(ConfigDir) + 'bad-id.json';
+      ManifestText.Text :=
+        '{"api":1,"schema":1,"id":"test.badid","name":"Bad Id",' +
+        '"runtime":{"type":"pascalscript","entry":"main"},"commands":[' +
+        '{"id":"bad:id","title":"Bad"}]}';
+      ManifestText.SaveToFile(ManifestFile);
+      BadPlugin := ParsePluginManifest(ManifestFile, ErrorText);
+      if BadPlugin <> nil then FreeAndNil(BadPlugin);
+      if not Check(Pos('invalid command id', LowerCase(ErrorText)) > 0,
+        'invalid command id not rejected: ' + ErrorText) then Halt(69);
+    finally
+      ManifestText.Free;
+    end;
+
     Manager := TPluginManager.Create(ConfigDir);
     try
       Manager.Reload(Root, IncludeTrailingPathDelimiter(ConfigDir) + 'plugins');

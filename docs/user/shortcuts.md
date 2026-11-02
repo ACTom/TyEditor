@@ -6,6 +6,20 @@ platform command key where appropriate. Menu shortcuts can be changed in
 **Settings > Keyboard Shortcuts...**. On macOS, Preferences and Keyboard
 Shortcuts are provided by the native application menu.
 
+The shortcut editor groups commands by menu. Built-in commands, enabled plugin
+commands and enabled external tools are all listed. Plugin commands appear under
+their plugin name and tools under their tool name.
+
+Assigning a key that is already used by one or more commands shows every
+conflict. Choose **Yes** to clear the conflicting assignments and use the key for
+the selected command, or **No** to leave everything unchanged. Conflicts already
+present in settings are marked with `⚠` when the dialog opens.
+
+The editor owns the keys of non-menu actions such as caret movement and
+word-wise selection. Assigning one of those keys to a menu command shows a
+warning; the menu shortcut takes precedence if you continue. These editor-only
+actions are not part of the shortcut editor.
+
 ## Files and tabs
 
 | Shortcut | Action |
@@ -81,3 +95,8 @@ TyEditor uses single-caret, non-virtual-space editing by default. `Ctrl+Alt+Up`
 and `Ctrl+Alt+Down` explicitly add carets. Copy/cut with no selection does not
 operate on the whole line; this is intentional and can be changed in
 Preferences.
+
+Menu commands take over the matching editor default key. For example, **Redo**
+uses the menu shortcut and the editor's separate `Ctrl+Shift+Z` redo binding is
+removed, so the old key no longer performs a hidden action. Editor actions that
+have no menu item keep their normal keys.

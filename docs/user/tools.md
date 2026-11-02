@@ -136,6 +136,14 @@ output.
 - Output: `Show in a window`
 - Save before: `Current file`
 
+## Keyboard shortcuts
+
+Each enabled tool can be assigned a shortcut in **Settings > Keyboard
+Shortcuts...**, under a group named after the tool. Shortcuts are stored by the
+tool's stable id, so renaming the tool keeps the assignment. Disabling a tool
+removes it from the shortcut editor but keeps its saved shortcut; enabling it
+again restores the shortcut.
+
 ## Execution and errors
 
 Tools run in a background thread. The progress dialog offers **Cancel**, and the
@@ -147,7 +155,6 @@ Tools run with the same privileges as TyEditor. Only add commands you trust.
 
 ## Current limits
 
-- Tools have no custom keyboard shortcuts.
 - There is no import/export for tool definitions; edit `tools.json` to copy
   them between machines.
 - Tools cannot modify the document when the document has no tab (for example

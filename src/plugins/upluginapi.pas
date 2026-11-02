@@ -429,6 +429,17 @@ begin
     AList.Add(AValue.AsString);
 end;
 
+function IsValidCommandId(const AId: string): Boolean;
+var
+  i: Integer;
+begin
+  Result := AId <> '';
+  if not Result then Exit;
+  for i := 1 to Length(AId) do
+    if (AId[i] = ':') or (AId[i] = '=') or (Ord(AId[i]) < 32) then
+      Exit(False);
+end;
+
 function ParsePluginManifest(const AFileName: string;
   out AError: string): TPluginInfo;
 var
@@ -589,6 +600,18 @@ begin
         CmdTitle := Trim(ItemObj.Get('title', ItemObj.Get('label', '')));
         Scope := LowerCase(Trim(ItemObj.Get('scope', 'selection')));
         if (CmdId = '') or (CmdTitle = '') then Continue;
+        if not IsValidCommandId(CmdId) then
+        begin
+          AError := AFileName + ': invalid command id "' + CmdId + '"';
+          FreeAndNil(Result);
+          Exit;
+        end;
+        if Result.FindCommand(CmdId) <> nil then
+        begin
+          AError := AFileName + ': duplicate command id "' + CmdId + '"';
+          FreeAndNil(Result);
+          Exit;
+        end;
         if (Scope <> 'selection') and (Scope <> 'document') and (Scope <> 'none') then
           Scope := 'selection';
         Cmd := TPluginCommand.Create;
