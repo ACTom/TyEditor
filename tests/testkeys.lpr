@@ -3,7 +3,8 @@ program testkeys;
 
 uses
   Interfaces, SysUtils, Classes, Menus, LCLProc,
-  ucommands, usettings, ukeybindings;
+  ATSynEdit_Keymap, ATSynEdit_Commands,
+  ucommands, usettings, ukeybindings, ueditorkeymap;
 
 var
   Failures: Integer = 0;
@@ -50,6 +51,7 @@ var
   Settings: TAppSettings;
   Manager: TShortcutManager;
   Conflicts: TShortcutConflictArray;
+  EditorMap: TATKeymap;
   NewID, OpenID, PluginID, ToolID: string;
   NewKey, OpenKey, PluginKey, ToolKey: TShortCut;
 begin
@@ -126,6 +128,30 @@ begin
     Check(PluginItem.ShortCut = PluginKey, 'apply writes plugin override');
     Check(ToolItem.ShortCut = ToolKey, 'apply writes tool override');
     Check(NewItem.DefaultShortCut = NewKey, 'default is not overwritten');
+
+    EditorMap := CreateManagedEditorKeymap;
+    try
+      Check(EditorMap.IndexOf(cCommand_Undo) < 0, 'editor undo key removed');
+      Check(EditorMap.IndexOf(cCommand_Redo) < 0, 'editor redo key removed');
+      Check(EditorMap.IndexOf(cCommand_TextDuplicateLine) < 0,
+        'editor duplicate-line key removed');
+      Check(EditorMap.IndexOf(cCommand_TextDeleteLine) < 0,
+        'editor delete-line key removed');
+      Check(EditorMap.IndexOf(cCommand_ClipboardCopy) < 0,
+        'editor copy key removed');
+      Check(EditorMap.IndexOf(cCommand_SelectAll) < 0,
+        'editor select-all key removed');
+      Check(EditorMap.IndexOf(cCommand_SelectWords) >= 0,
+        'non-menu editor key retained');
+      Check(EditorKeyConflictName(EditorMap, ShortCut(Ord('Y'), [ssCtrl])) = '',
+        'removed old Ctrl+Y is not reported');
+      Check(EditorKeyConflictName(EditorMap, ShortCut(Ord('L'), [ssCtrl])) <> '',
+        'non-menu Ctrl+L is reported');
+      Check(EditorKeyConflictName(EditorMap, 0) = '',
+        'empty editor conflict query');
+    finally
+      EditorMap.Free;
+    end;
 
     Manager.UnregisterSource(csPlugin);
     Conflicts := Manager.Conflicts(NewID, PluginKey);

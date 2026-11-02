@@ -7,8 +7,9 @@
       <Title Value="testkeys"/>
     </General>
     <BuildModes Count="1"><Item1 Name="Default" Default="True"/></BuildModes>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="2">
       <Item1><PackageName Value="LCL"/></Item1>
+      <Item2><PackageName Value="atsynedit_package"/></Item2>
     </RequiredPackages>
     <Units Count="1">
       <Unit0><Filename Value="testkeys.lpr"/><IsPartOfProject Value="True"/></Unit0>

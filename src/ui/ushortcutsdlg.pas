@@ -268,7 +268,8 @@ begin
     Exit(PtrInt(FGroupMap.Objects[Index]));
   G := FList.Groups.Add;
   G.Caption := AName;
-  G.Collapsed := FGroupCollapsed.Values[AName] = '1';
+  Index := FGroupCollapsed.IndexOf(AName);
+  G.Collapsed := (Index >= 0) and (FGroupCollapsed.Objects[Index] <> nil);
   Index := FList.Groups.Count - 1;
   FGroupMap.AddObject(AName, TObject(PtrInt(Index)));
   Result := Index;
@@ -297,10 +298,15 @@ var
   S, FilterText, GroupText: string;
 begin
   for i := 0 to FList.Groups.Count - 1 do
-    if FList.Groups[i].Collapsed then
-      FGroupCollapsed.Values[FList.Groups[i].Caption] := '1'
+  begin
+    GroupIndex := FGroupCollapsed.IndexOf(FList.Groups[i].Caption);
+    if GroupIndex < 0 then
+      FGroupCollapsed.AddObject(FList.Groups[i].Caption,
+        TObject(PtrInt(Ord(FList.Groups[i].Collapsed))))
     else
-      FGroupCollapsed.Values[FList.Groups[i].Caption] := '0';
+      FGroupCollapsed.Objects[GroupIndex] :=
+        TObject(PtrInt(Ord(FList.Groups[i].Collapsed)));
+  end;
   FList.Items.Clear;
   FList.Groups.Clear;
   FGroupMap.Clear;
@@ -462,8 +468,6 @@ begin
         Key := 0;
         Exit;
       end;
-      for i := 0 to High(Conflicts) do
-        FManager.SetShortcut(Conflicts[i].ID, 0);
     finally
       Lines.Free;
     end;
@@ -481,6 +485,10 @@ begin
       end;
   end;
 
+  { Only change settings after every prompt has been accepted.  Otherwise a
+    rejected editor-key warning would leave conflicts cleared. }
+  for i := 0 to High(Conflicts) do
+    FManager.SetShortcut(Conflicts[i].ID, 0);
   FManager.SetShortcut(Cmd, NewShortcut);
   ApplyMenus;
   RefreshList;

@@ -93,9 +93,9 @@ PascalScript runtime is available everywhere.
 
 Required fields: `schema`, `api`, `id`, `name`, `version`, `runtime` and at least
 one valid `commands` entry. `schema` and `api` must both be `1` in this release.
-`id` must be stable and must not contain path separators or drive colons. `version` is a dotted
-version string; `editor` compatibility uses the same comparison rules as
-`scripts/dev/version.py`.
+`id` must be stable and must not contain path separators, drive colons, `=` or
+control characters. `version` is a dotted version string; `editor` compatibility
+uses the same comparison rules as `scripts/dev/version.py`.
 
 ### Runtime
 

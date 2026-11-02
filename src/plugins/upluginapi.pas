@@ -502,9 +502,9 @@ begin
       FreeAndNil(Result);
       Exit;
     end;
-    if (Pos('/', Result.Id) > 0) or (Pos('\', Result.Id) > 0) or
-       (Pos(':', Result.Id) > 0) or (Result.Id = '.') or
-       (Result.Id = '..') then
+    if (not IsValidCommandId(Result.Id)) or
+       (Pos('/', Result.Id) > 0) or (Pos('\', Result.Id) > 0) or
+       (Result.Id = '.') or (Result.Id = '..') then
     begin
       AError := AFileName + ': invalid plugin id';
       FreeAndNil(Result);

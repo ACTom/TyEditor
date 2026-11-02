@@ -449,6 +449,17 @@ begin
       if BadPlugin <> nil then FreeAndNil(BadPlugin);
       if not Check(Pos('invalid command id', LowerCase(ErrorText)) > 0,
         'invalid command id not rejected: ' + ErrorText) then Halt(69);
+
+      ManifestFile := IncludeTrailingPathDelimiter(ConfigDir) + 'bad-plugin-id.json';
+      ManifestText.Text :=
+        '{"api":1,"schema":1,"id":"bad=id","name":"Bad Plugin Id",' +
+        '"runtime":{"type":"pascalscript","entry":"main"},"commands":[' +
+        '{"id":"run","title":"Run"}]}';
+      ManifestText.SaveToFile(ManifestFile);
+      BadPlugin := ParsePluginManifest(ManifestFile, ErrorText);
+      if BadPlugin <> nil then FreeAndNil(BadPlugin);
+      if not Check(Pos('invalid plugin id', LowerCase(ErrorText)) > 0,
+        'invalid plugin id not rejected: ' + ErrorText) then Halt(70);
     finally
       ManifestText.Free;
     end;

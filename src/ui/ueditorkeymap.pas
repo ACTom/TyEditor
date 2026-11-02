@@ -89,9 +89,9 @@ begin
   for i := 0 to AMap.Count - 1 do
   begin
     Item := AMap.Items[i];
-    if (Item.Keys1.Data[0] = AShortCut) and (Item.Keys1.Data[1] = 0) then
+    if (Item.Keys1.Data[0] = AShortCut) and (Item.Keys1.Data[0] <> 0) then
       Exit(Item.Name);
-    if (Item.Keys2.Data[0] = AShortCut) and (Item.Keys2.Data[1] = 0) then
+    if (Item.Keys2.Data[0] = AShortCut) and (Item.Keys2.Data[0] <> 0) then
       Exit(Item.Name);
   end;
 end;
