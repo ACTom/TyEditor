@@ -453,6 +453,8 @@ end;
 procedure TMainForm.BuildChrome;
 begin
   Caption := 'TyEditor';
+  AllowDropFiles := True;
+  OnDropFiles := @DoDropFiles;
   BorderIcons := [biSystemMenu, biMinimize, biMaximize];
   Position := poDesigned;
   SetBounds(FSettings.WindowLeft, FSettings.WindowTop,
@@ -2835,9 +2837,24 @@ begin
 end;
 
 procedure TMainForm.DoDropFiles(Sender: TObject; const FileNames: array of string);
+var
+  Files: array of string;
+  i, Count: Integer;
 begin
-  if Length(FileNames) > 0 then
-    OpenFiles(FileNames);
+  { LCL reports any text/plain or text/uri-list drop as a file list, so a
+    dragged text snippet can arrive here as a fake file name. Keep real files
+    and ignore the rest instead of showing "File not found" dialogs. }
+  SetLength(Files, Length(FileNames));
+  Count := 0;
+  for i := 0 to High(FileNames) do
+    if FileExists(FileNames[i]) then
+    begin
+      Files[Count] := FileNames[i];
+      Inc(Count);
+    end;
+  if Count = 0 then Exit;
+  SetLength(Files, Count);
+  OpenFiles(Files);
 end;
 
 procedure TMainForm.DoEditorCmd(ACommand: Integer);
