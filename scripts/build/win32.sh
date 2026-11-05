@@ -17,7 +17,40 @@ else
   ( cd "$ROOT" && "$RESCOMP" /fo "$ROOT/build/tyeditor_icon.res" "$ROOT/packaging/windows/tyeditor.rc" )
 fi
 
-"$LAZBUILD" "${LAZBUILD_OPTS[@]}" --os=win32 --cpu=i386 --ws=win32 \
+# Lazarus 4.8/4.9 package builds do not add dependency source directories to
+# the compiler command line.  A clean i386 build can then fail with
+# "Can't find unit BGRAUnits used by BGRABitmapTypes" when TyControls is
+# rebuilt.  Use a tiny compiler wrapper that makes the known source directories
+# available for package builds as well as the project build.
+FPC_CMD="${FPC_CMD:-}"
+if [ -z "$FPC_CMD" ]; then
+  ENV_OPTIONS="${PCP:-$HOME/.lazarus}/environmentoptions.xml"
+  if [ -f "$ENV_OPTIONS" ]; then
+    FPC_CMD="$(awk -F'"' '/<CompilerFilename Value=/{print $2; exit}' "$ENV_OPTIONS")"
+  fi
+fi
+COMPILER_OPTS=()
+if [ -n "$FPC_CMD" ] && [ -x "$FPC_CMD" ]; then
+  FPC_WRAPPER="$ROOT/build/fpc-win32-wrapper.sh"
+  {
+    echo '#!/bin/sh'
+    printf 'exec %q' "$FPC_CMD"
+    for path in \
+      "$CCR_DIR/bgrabitmap/bgrabitmap" \
+      "$CCR_DIR/atsynedit/atsynedit" \
+      "$CCR_DIR/atsynedit_ex/atsynedit_ex" \
+      "$CCR_DIR/econtrol/econtrol" \
+      "$CCR_DIR/atflatcontrols/atflatcontrols" \
+      "$TYCONTROLS_DIR"; do
+      printf ' -Fu%q' "$path"
+    done
+    printf ' "$@"\n'
+  } > "$FPC_WRAPPER"
+  chmod +x "$FPC_WRAPPER"
+  COMPILER_OPTS=("--compiler=$FPC_WRAPPER")
+fi
+
+"$LAZBUILD" "${LAZBUILD_OPTS[@]}" "${COMPILER_OPTS[@]}" --os=win32 --cpu=i386 --ws=win32 \
   "${UNIT_OPTS[@]}" "$ROOT/TyEditor.lpi"
 
 mkdir -p "$DIST"
