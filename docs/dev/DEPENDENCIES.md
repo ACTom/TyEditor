@@ -90,6 +90,8 @@ API mismatches or duplicate-unit warnings.
 
 - Cocoa widgetset and an FPC macOS cross toolchain for cross builds.
 - Output is unsigned and not notarized unless you sign it yourself.
+- Only when regenerating `data/icons/tyeditor.icns`, Python Pillow is needed
+  for `scripts/dev/make-macos-icns.py`; normal builds use the committed file.
 
 ### Linux aarch64
 

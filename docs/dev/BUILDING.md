@@ -101,6 +101,9 @@ outputs.
   association; uninstaller keeps `%APPDATA%\TyEditor`.
 - `TyEditor.ico` — Windows executable icon read by Lazarus from the project
   directory; keep it identical to `data/icons/tyeditor.ico`.
+- `data/icons/tyeditor.icns` — macOS application icon, generated from
+  `data/icons/tyeditor-1024.png` with `scripts/dev/make-macos-icns.py`. The
+  script applies the Big Sur 824/1024 grid and writes the Retina ICNS types.
 - `packaging/linux/tyeditor.desktop` — desktop entry.
 - `packaging/macos/Info.plist` — macOS app metadata; the build script updates
   its version from `TyEditor.lpi`.
