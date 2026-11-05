@@ -62,6 +62,12 @@ fi
 
 STRIP="${STRIP:-$(command -v llvm-strip || command -v strip || true)}"
 
+# Lazarus reads the Windows executable icon from TyEditor.ico next to the
+# project file. Keep it identical to the icon shipped in data/icons/.
+if ! cmp -s "$ROOT/TyEditor.ico" "$ROOT/data/icons/tyeditor.ico"; then
+  die "TyEditor.ico and data/icons/tyeditor.ico differ; keep them in sync"
+fi
+
 APP_VERSION="$("$PYTHON" "$ROOT/scripts/dev/version.py" --print "$ROOT/TyEditor.lpi")"
 [ -n "$APP_VERSION" ] || die "could not read project version from TyEditor.lpi"
 "$PYTHON" "$ROOT/scripts/dev/version.py" --write "$ROOT/TyEditor.lpi" "$ROOT/src/version.inc"

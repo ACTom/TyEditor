@@ -8,9 +8,6 @@ uses
   umain;
 
 {$R *.res}
-{$IFDEF WINDOWS}
-  {$R 'build/tyeditor_icon.res'}
-{$ENDIF}
 
 begin
   RequireDerivedFormResource := False;

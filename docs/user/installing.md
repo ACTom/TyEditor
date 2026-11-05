@@ -43,7 +43,6 @@ Other useful variables:
 | `PCP` | Lazarus primary config path, if not the default |
 | `PYTHON` | Python 3 interpreter used by scripts |
 | `STRIP` | Strip tool (`llvm-strip`, `strip`, …) |
-| `RESCOMP` | Windows resource compiler (`llvm-rc` or `windres`) |
 | `OBJCOPY` | Windows section remover (`llvm-objcopy` or `objcopy`) |
 | `CROSS_BIN` | aarch64 binutils directory |
 | `SYSROOT` | aarch64 glibc/Qt6 sysroot |
@@ -116,9 +115,9 @@ the LCL Qt6 widgetset.
 ### Windows
 
 The Windows builds use the native Win32 widgetset, not Qt6. On Linux, cross
-compilation requires a Windows-capable FPC and a resource compiler
-(`llvm-rc` is the usual choice). The scripts compile the application icon into
-the PE file explicitly.
+compilation requires a Windows-capable FPC. Lazarus generates the icon, manifest
+and version info from `TyEditor.lpi` (the project icon is `TyEditor.ico`), so no
+separate resource compiler is needed.
 
 ```bash
 ./scripts/build.sh win32
