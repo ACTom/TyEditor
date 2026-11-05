@@ -75,6 +75,7 @@ dist/linux-x86_64/TyEditor 文件1.txt 文件2.md
 | [插件协议](docs/dev/PLUGIN_PROTOCOL.md) | 包格式、清单、运行时和 JSON 协议 |
 | [测试](docs/dev/TESTING.md) | 自动化测试和手工验收清单 |
 | [路线图](docs/dev/ROADMAP.md) | 当前范围和后续计划 |
+| [更新日志](CHANGELOG.md) | 各版本的重要变更 |
 
 ## 插件
 

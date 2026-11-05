@@ -105,6 +105,7 @@ On first launch TyEditor creates its settings and session directory:
 | [Plugin protocol](docs/dev/PLUGIN_PROTOCOL.md) | Package format, manifest, runtimes and JSON protocol |
 | [Testing](docs/dev/TESTING.md) | Automated tests and manual acceptance checklist |
 | [Roadmap](docs/dev/ROADMAP.md) | Current scope and planned work |
+| [Changelog](CHANGELOG.en.md) | Notable changes in every release |
 
 ## Plugins
 

@@ -23,6 +23,10 @@ day.
 
 ## Files and encodings
 
+Drop files from the file manager onto the main window to open them as tabs; one
+file opens one tab, and several files open several tabs. Files that are already
+open are selected instead of duplicated.
+
 The status bar shows the current encoding and line-ending style. Click either
 indicator to:
 
