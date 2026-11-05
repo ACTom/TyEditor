@@ -469,11 +469,7 @@ begin
   else
     TyDefaultController.Mode := 'light';
   ApplyChromeTheme(TyDefaultController);
-  if FSettings.AlwaysOnTop then
-    FormStyle := fsStayOnTop
-  else if FormStyle = fsStayOnTop then
-    FormStyle := fsNormal;
-  SetNativeTopMost(Self, FSettings.AlwaysOnTop);
+  ApplyFormStayOnTop(Self, FSettings.AlwaysOnTop);
 
   FSurface := TTyFormSurface.Create(Self);
   FSurface.Name := 'Surface';
@@ -859,11 +855,7 @@ begin
   else
     TyDefaultController.Mode := 'light';
   ApplyChromeTheme(TyDefaultController);
-  if FSettings.AlwaysOnTop then
-    FormStyle := fsStayOnTop
-  else if FormStyle = fsStayOnTop then
-    FormStyle := fsNormal;
-  SetNativeTopMost(Self, FSettings.AlwaysOnTop);
+  ApplyFormStayOnTop(Self, FSettings.AlwaysOnTop);
   if FFindForm <> nil then
   begin
     FFindForm.Controller := TyDefaultController;
@@ -3497,23 +3489,15 @@ end;
 
 procedure TMainForm.ApplyTopMostLater(Data: PtrInt);
 begin
-  if FSettings.AlwaysOnTop then
-    FormStyle := fsStayOnTop
-  else
-    FormStyle := fsNormal;
-  SetNativeTopMost(Self, FSettings.AlwaysOnTop);
+  ApplyFormStayOnTop(Self, FSettings.AlwaysOnTop);
   ApplyDialogStayOnTop;
 end;
 
 procedure TMainForm.ToggleAlwaysOnTop;
 begin
   FSettings.AlwaysOnTop := not FSettings.AlwaysOnTop;
-  if FSettings.AlwaysOnTop then
-    FormStyle := fsStayOnTop
-  else
-    FormStyle := fsNormal;
   FAlwaysOnTopItem.Checked := FSettings.AlwaysOnTop;
-  SetNativeTopMost(Self, FSettings.AlwaysOnTop);
+  ApplyFormStayOnTop(Self, FSettings.AlwaysOnTop);
   ApplyDialogStayOnTop;
   Application.QueueAsyncCall(@ApplyTopMostLater, 0);
 end;
@@ -3522,15 +3506,12 @@ procedure TMainForm.ApplyDialogStayOnTop;
 var
   i: Integer;
 begin
+  { On Wayland fsStayOnTop is inert and changing it recreates the native
+    window (see ApplyFormStayOnTop), so leave dialogs alone there. }
+  if not AlwaysOnTopSupported then Exit;
   for i := 0 to Screen.CustomFormCount - 1 do
     if Screen.CustomForms[i] <> Self then
-    begin
-      if FSettings.AlwaysOnTop then
-        Screen.CustomForms[i].FormStyle := fsStayOnTop
-      else
-        Screen.CustomForms[i].FormStyle := fsNormal;
-      SetNativeTopMost(Screen.CustomForms[i], FSettings.AlwaysOnTop);
-    end;
+      ApplyFormStayOnTop(Screen.CustomForms[i], FSettings.AlwaysOnTop);
 end;
 
 procedure TMainForm.ToggleFullScreen;
@@ -3817,7 +3798,7 @@ var
 begin
   if FStartupDone then Exit;
   FStartupDone := True;
-  SetNativeTopMost(Self, FSettings.AlwaysOnTop);
+  ApplyFormStayOnTop(Self, FSettings.AlwaysOnTop);
   ApplyDialogStayOnTop;
   if FStartupRestorePending then
   begin
@@ -4288,11 +4269,7 @@ begin
         if FInstanceTimer <> nil then FInstanceTimer.Enabled := False;
       end;
       ApplyAppTheme;
-      if FSettings.AlwaysOnTop then
-        FormStyle := fsStayOnTop
-      else if FormStyle = fsStayOnTop then
-        FormStyle := fsNormal;
-      SetNativeTopMost(Self, FSettings.AlwaysOnTop);
+      ApplyFormStayOnTop(Self, FSettings.AlwaysOnTop);
       ApplyDialogStayOnTop;
       FAlwaysOnTopItem.Checked := FSettings.AlwaysOnTop;
       FWrapItem.Checked := FSettings.WordWrap;
