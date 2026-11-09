@@ -28,7 +28,10 @@
   <string>public.app-category.productivity</string>
   <key>NSHighResolutionCapable</key>
   <true/>
+  <!-- LCL Cocoa looks up the app class through this key; it must be the
+       Pascal objcclass, not NSApplication, or AppRun crashes with
+       "-[NSApplication lclSetLCLMainLoop:]: unrecognized selector". -->
   <key>NSPrincipalClass</key>
-  <string>NSApplication</string>
+  <string>TCocoaApplication</string>
 </dict>
 </plist>

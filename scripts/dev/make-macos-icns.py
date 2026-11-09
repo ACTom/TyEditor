@@ -28,9 +28,14 @@ SUPERSAMPLE = 4
 
 # ICNS type -> pixel size. Both legacy and Retina types are included so that
 # Finder and the Dock pick a sharp representation on every display.
+#
+# The 16x16/32x32 representations are deliberately omitted. macOS renders an
+# ICNS whose 16/32 px entries are present as garbled static in Finder's list
+# view (icon view and 64 px+ stay correct), even though the PNG payloads
+# themselves decode fine standalone; reproducible with re-encoded payloads and
+# with iconutil's own output. Without them the system derives the small sizes by
+# downscaling ic11 (32 px) and ic07 (128 px), which renders correctly.
 ICNS_TYPES = (
-    ("icp4", 16),
-    ("icp5", 32),
     ("ic07", 128),
     ("ic08", 256),
     ("ic09", 512),
